@@ -5,3 +5,5 @@ env
 dist/
 build/
 *.pyc
+models/*.onnx
+models/*.onnx.json
