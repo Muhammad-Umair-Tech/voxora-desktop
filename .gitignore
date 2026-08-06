@@ -7,5 +7,5 @@ build/
 *.pyc
 models/*.onnx
 models/*.onnx.json
-tools/piper/
+tools/piper
 *.dll
