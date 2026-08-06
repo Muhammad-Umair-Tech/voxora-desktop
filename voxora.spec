@@ -80,3 +80,6 @@ coll = COLLECT(
     upx_exclude=[],
     name='Voxora',
 )
+
+# --------------------------------------------------
+# Run pyinstaller voxora.spec --noconfirm
