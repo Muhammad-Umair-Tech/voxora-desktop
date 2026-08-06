@@ -6,6 +6,11 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from utils.port_finder import find_free_port
 
+# Ensure the root directory (parent of backend/) is in sys.path when running as frozen .exe
+root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if root_dir not in sys.path:
+    sys.path.insert(0, root_dir)
+
 # Fix PyInstaller console=False issue (sys.stdout and sys.stderr are None)
 if sys.stdout is None:
     sys.stdout = io.StringIO()
@@ -37,7 +42,7 @@ if __name__ == "__main__":
 
     # Passing an empty log_config dictionary disables Uvicorn's fileConfig and color formatting checks
     uvicorn.run(
-        "backend.main:app",
+        app,
         host="127.0.0.1",
         port=port,
         reload=False,
