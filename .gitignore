@@ -1,3 +1,7 @@
 __pycache__
 env
 .env
+%TEMP%/voxora/
+dist/
+build/
+*.pyc

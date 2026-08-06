@@ -1,2 +1,4 @@
 fastapi
 pyinstaller
+uvicorn
+moviepy

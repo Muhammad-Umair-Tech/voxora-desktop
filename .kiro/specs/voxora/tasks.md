@@ -3,21 +3,21 @@
 ## Day 1: Project Setup & Core Infrastructure
 
 - [DONE] **1.1** Initialize the project repository with the directory structure defined in the design doc (`backend/`, `frontend/`, `models/`, `assets/`, `landing/`).
-- [ ] **1.2** Scaffold the FastAPI backend: create `backend/main.py` with a basic health-check route (`GET /api/health`) and Uvicorn startup call.
-- [ ] **1.3** Scaffold the React + Vite frontend: run `npm create vite@latest frontend -- --template react`, install `tailwindcss`, `lucide-react`, `axios`, and `wavesurfer.js`.
-- [ ] **1.4** Configure Tailwind CSS in `frontend/tailwind.config.js` and `frontend/src/index.css`.
-- [ ] **1.5** Configure Vite in `frontend/vite.config.js` to output the build to `frontend/dist` and proxy `/api` calls to `localhost:8765` during development.
-- [ ] **1.6** Implement `backend/utils/port_finder.py`: function `find_free_port(start=8765, retries=20) -> int` using the `socket` library.
-- [ ] **1.7** Update `backend/main.py` to use `find_free_port()` on startup and mount the `frontend/dist` static files at `/`.
+- [DONE] **1.2** Scaffold the FastAPI backend: create `backend/main.py` with a basic health-check route (`GET /api/health`) and Uvicorn startup call.
+- [DONE] **1.3** Scaffold the React + Vite frontend: run `npm create vite@latest frontend -- --template react`, install `tailwindcss`, `lucide-react`, `axios`, and `wavesurfer.js`.
+- [DONE] **1.4** Configure Tailwind CSS in `frontend/tailwind.config.js` and `frontend/src/index.css`.
+- [DONE] **1.5** Configure Vite in `frontend/vite.config.js` to output the build to `frontend/dist` and proxy `/api` calls to `localhost:8765` during development.
+- [DONE] **1.6** Implement `backend/utils/port_finder.py`: function `find_free_port(start=8765, retries=20) -> int` using the `socket` library.
+- [DONE] **1.7** Update `backend/main.py` to use `find_free_port()` on startup and mount the `frontend/dist` static files at `/`.
 - [ ] **1.8** Draft the initial `voxora.spec` PyInstaller file. Confirm that a basic `pyinstaller voxora.spec` run produces an `.exe` that starts the server and serves a placeholder React page.
-- [ ] **1.9** Add a `.gitignore` covering `__pycache__`, `*.pyc`, `node_modules`, `frontend/dist`, `dist/`, `build/`, and `%TEMP%/voxora/`.
+- [DONE] **1.9** Add a `.gitignore` covering `__pycache__`, `*.pyc`, `node_modules`, `frontend/dist`, `dist/`, `build/`, and `%TEMP%/voxora/`.
 
 ---
 
 ## Day 2: Offline AI Integration (Piper TTS)
 
-- [ ] **2.1** Download the chosen 3–5 Piper TTS voice models (`.onnx` + `.onnx.json` config files) and place them in the `models/` directory. Document the selected voices and their identifiers in a `models/VOICES.md` file.
-- [ ] **2.2** Verify that the bundled `piper` binary (or `piper-tts` Python package) can be invoked via `subprocess.run` and produces a valid `.wav` file from stdin text.
+- [DONE] **2.1** Download the chosen 3–5 Piper TTS voice models (`.onnx` + `.onnx.json` config files) and place them in the `models/` directory. Document the selected voices and their identifiers in a `models/VOICES.md` file.
+- [DONE] **2.2** Verify that the bundled `piper` binary (or `piper-tts` Python package) can be invoked via `subprocess.run` and produces a valid `.wav` file from stdin text.
 - [ ] **2.3** Implement `backend/services/tts_service.py`:
   - `get_model_path(voice_id: str) -> Path` — resolves the bundled `.onnx` path using `sys._MEIPASS` when frozen, or a relative path in dev mode.
   - `generate(text: str, voice_id: str) -> tuple[Path, float]` — runs the Piper subprocess, returns the output `.wav` path and duration.
