@@ -2,3 +2,4 @@ fastapi
 pyinstaller
 uvicorn
 moviepy
+python-multipart

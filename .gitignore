@@ -8,5 +8,6 @@ build/
 models/*.onnx
 models/*.onnx.json
 tools/piper
+tools/ffmpeg
 *.dll
 *.wav

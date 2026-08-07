@@ -31,8 +31,8 @@
 
 ## Day 3: Video Processing Engine
 
-- [ ] **3.1** Confirm `moviepy` and its dependency on `ffmpeg` are installed. Resolve the bundled `ffmpeg.exe` path using `sys._MEIPASS` and set `moviepy.config.FFMPEG_BINARY` at startup.
-- [ ] **3.2** Implement `backend/routers/video.py` — `POST /api/upload-video`:
+- [DONE] **3.1** Confirm `moviepy` and its dependency on `ffmpeg` are installed. Resolve the bundled `ffmpeg.exe` path using `sys._MEIPASS` and set `moviepy.config.FFMPEG_BINARY` at startup.
+- [DONE] **3.2** Implement `backend/routers/video.py` — `POST /api/upload-video`:
   - Accept multipart `UploadFile`.
   - Validate file extension (`.mp4`, `.mkv`, `.mov`, `.avi`).
   - Save to `%TEMP%\voxora\video\`.

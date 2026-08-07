@@ -10,10 +10,23 @@ class GenerateAudioRequest(BaseModel):
     )
 
 
+# gt=0 ensures non-negative entries.
+# description="..." helps in Swagger documentation.
+
+
 class GenerateAudioResponse(BaseModel):
     audio_url: str = Field(
         ..., description="Relative or full URL path to the generated .wav file."
     )
     duration: float = Field(
         ..., gt=0, description="Duration of the generated audio in seconds."
+    )
+
+
+class UploadVideoResponse(BaseModel):
+    video_id: str = Field(
+        ..., min_length=1, description="Unique UUID string identifying the video file."
+    )
+    duration_seconds: float = Field(
+        ..., gt=0, description="Total duration of the uploaded video in seconds."
     )

@@ -20,9 +20,12 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from routers.audio import router as audio_router
+from routers.video import router as video_router
+from services.video_service import FFMPEG_EXE
 
-app = FastAPI()
+app = FastAPI(title="Voxora")
 app.include_router(audio_router)
+app.include_router(video_router)
 
 
 # Example API route
