@@ -9,3 +9,4 @@ models/*.onnx
 models/*.onnx.json
 tools/piper
 *.dll
+*.wav
