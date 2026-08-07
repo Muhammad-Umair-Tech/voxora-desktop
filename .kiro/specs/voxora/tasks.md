@@ -9,7 +9,7 @@
 - [DONE] **1.5** Configure Vite in `frontend/vite.config.js` to output the build to `frontend/dist` and proxy `/api` calls to `localhost:8765` during development.
 - [DONE] **1.6** Implement `backend/utils/port_finder.py`: function `find_free_port(start=8765, retries=20) -> int` using the `socket` library.
 - [DONE] **1.7** Update `backend/main.py` to use `find_free_port()` on startup and mount the `frontend/dist` static files at `/`.
-- [ ] **1.8** Draft the initial `voxora.spec` PyInstaller file. Confirm that a basic `pyinstaller voxora.spec` run produces an `.exe` that starts the server and serves a placeholder React page.
+- [DONE] **1.8** Draft the initial `voxora.spec` PyInstaller file. Confirm that a basic `pyinstaller voxora.spec` run produces an `.exe` that starts the server and serves a placeholder React page.
 - [DONE] **1.9** Add a `.gitignore` covering `__pycache__`, `*.pyc`, `node_modules`, `frontend/dist`, `dist/`, `build/`, and `%TEMP%/voxora/`.
 
 ---
