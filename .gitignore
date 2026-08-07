@@ -11,3 +11,4 @@ tools/piper
 tools/ffmpeg
 *.dll
 *.wav
+media/audio
