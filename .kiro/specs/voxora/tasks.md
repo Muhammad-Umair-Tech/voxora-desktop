@@ -18,14 +18,14 @@
 
 - [DONE] **2.1** Download the chosen 3–5 Piper TTS voice models (`.onnx` + `.onnx.json` config files) and place them in the `models/` directory. Document the selected voices and their identifiers in a `models/VOICES.md` file.
 - [DONE] **2.2** Verify that the bundled `piper` binary (or `piper-tts` Python package) can be invoked via `subprocess.run` and produces a valid `.wav` file from stdin text.
-- [ ] **2.3** Implement `backend/services/tts_service.py`:
+- [DONE] **2.3** Implement `backend/services/tts_service.py`:
   - `get_model_path(voice_id: str) -> Path` — resolves the bundled `.onnx` path using `sys._MEIPASS` when frozen, or a relative path in dev mode.
   - `generate(text: str, voice_id: str) -> tuple[Path, float]` — runs the Piper subprocess, returns the output `.wav` path and duration.
-- [ ] **2.4** Implement the helper `get_wav_duration(path: Path) -> float` using Python's `wave` standard library.
-- [ ] **2.5** Define Pydantic schemas in `backend/models/schemas.py`: `GenerateAudioRequest`, `GenerateAudioResponse`.
-- [ ] **2.6** Implement `backend/routers/audio.py` with `POST /api/generate-audio`. Write output `.wav` files to `%TEMP%\voxora\audio\`.
-- [ ] **2.7** Register the audio router in `backend/main.py`.
-- [ ] **2.8** Test the endpoint manually with `curl` or Postman: send a sample text and voice ID, confirm a `.wav` is returned and playable.
+- [DONE] **2.4** Implement the helper `get_wav_duration(path: Path) -> float` using Python's `wave` standard library.
+- [DONE] **2.5** Define Pydantic schemas in `backend/models/schemas.py`: `GenerateAudioRequest`, `GenerateAudioResponse`.
+- [DONE] **2.6** Implement `backend/routers/audio.py` with `POST /api/generate-audio`. Write output `.wav` files to `%TEMP%\voxora\audio\`.
+- [DONE] **2.7** Register the audio router in `backend/main.py`.
+- [DONE] **2.8** Test the endpoint manually with `curl` or Postman: send a sample text and voice ID, confirm a `.wav` is returned and playable.
 
 ---
 

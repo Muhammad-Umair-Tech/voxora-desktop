@@ -19,8 +19,10 @@ from utils.port_finder import find_free_port
 import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from routers.audio import router as audio_router
 
 app = FastAPI()
+app.include_router(audio_router)
 
 
 # Example API route
@@ -31,7 +33,7 @@ def health_check():
 
 # Path to built frontend static files
 # When frozen by PyInstaller, use sys._MEIPASS to find bundled assets
-if getattr(sys, 'frozen', False):
+if getattr(sys, "frozen", False):
     # Running as compiled executable
     base_path = sys._MEIPASS
     dist_path = os.path.join(base_path, "frontend", "dist")
