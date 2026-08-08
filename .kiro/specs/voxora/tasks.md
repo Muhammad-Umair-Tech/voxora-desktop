@@ -54,7 +54,7 @@
 
 ## Day 4: React UI & Timeline Interface
 
-- [ ] **4.1** Build the root `App.jsx` layout: two-column grid (left: text/audio panel; right: video panel), header with app name and quit button. Wire up all top-level state variables as defined in the design doc.
+- [DONE] **4.1** Build the root `App.jsx` layout: two screens (audio and video), header with app name and quit button. Wire up all top-level state variables.
 - [ ] **4.2** Build `TextInput.jsx`: controlled `<textarea>` with a drag-and-drop overlay. On `.txt` file drop, use `FileReader` to populate the textarea value.
 - [ ] **4.3** Build `VoiceSelector.jsx`: render one card per voice (name, language tag). Highlight the selected voice. Accept `voices` array and `onSelect` prop.
 - [ ] **4.4** Build `AudioPlayer.jsx`: initialize `WaveSurfer` on a `useRef` div. Accept a `src` URL prop; re-initialize when `src` changes. Include play/pause button using a Lucide icon.

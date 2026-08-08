@@ -1,0 +1,149 @@
+@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap");
+
+/* ---------- Base Tokens & Variable Definitions ---------- */
+.vx-root {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-muted: #f1f1ef;
+  --ink: #121212;
+  --ink-soft: #5c5c5c;
+  --primary: #2fa24a;
+  --primary-ink: #ffffff;
+  --primary-container: #b9eac2;
+  --primary-container-ink: #123319;
+  --accent: #c97b4a;
+  --accent-container: #f3dcc9;
+  --shadow: rgba(0, 0, 0, 0.9);
+
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Inter", sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.vx-root[data-theme="dark"] {
+  --bg: #0e0e0e;
+  --surface: #181818;
+  --surface-muted: #232323;
+  --ink: #f5f5f5;
+  --ink-soft: #a6a6a6;
+  --primary: #3dc65c;
+  --primary-ink: #08150a;
+  --primary-container: #1f4a2a;
+  --primary-container-ink: #c9f2d2;
+  --accent: #e0985f;
+  --accent-container: #4a3320;
+  --shadow: rgba(0, 0, 0, 0.6);
+}
+
+.vx-root * {
+  box-sizing: border-box;
+}
+
+/* ---------- Typography & Utility Classes ---------- */
+.vx-display {
+  font-family: "Space Grotesk", sans-serif;
+}
+
+.vx-mono {
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.vx-border {
+  border: 2.5px solid var(--ink);
+}
+
+.vx-hard-shadow {
+  box-shadow: 4px 4px 0 0 var(--shadow);
+}
+
+.vx-hard-shadow-sm {
+  box-shadow: 3px 3px 0 0 var(--shadow);
+}
+
+.vx-text-soft {
+  color: var(--ink-soft);
+}
+
+.vx-press {
+  cursor: pointer;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    background-color 0.15s ease;
+}
+
+.vx-press:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 0 var(--shadow) !important;
+}
+
+.vx-wave-bar {
+  width: 3px;
+  min-height: 4px;
+  border-radius: 2px;
+  background: currentColor;
+}
+
+.vx-divider {
+  border-top: 2px dashed var(--ink);
+  opacity: 0.2;
+}
+
+.vx-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.vx-scrollbar::-webkit-scrollbar-track {
+  background: var(--surface-muted);
+}
+
+.vx-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 6px;
+}
+
+/* ---------- Component Style Classes ---------- */
+.vx-card {
+  background: var(--surface);
+}
+
+.vx-textarea {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.vx-dropzone {
+  background: var(--surface-muted);
+  border-style: dashed;
+}
+
+.vx-import-btn {
+  background: var(--surface);
+}
+
+.vx-voice-card {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.vx-voice-card--selected {
+  background: var(--primary-container);
+  color: var(--primary-container-ink);
+}
+
+.vx-voice-check {
+  background: var(--primary);
+  color: var(--primary-ink);
+}
+
+.vx-generate-btn {
+  background: var(--primary);
+  color: var(--primary-ink);
+}
