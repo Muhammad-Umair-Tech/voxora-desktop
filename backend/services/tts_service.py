@@ -112,4 +112,7 @@ def generate(
 
 
 if __name__ == "__main__":
-    generate("Nobody wanted somebody more.", "en_US-kathleen-low")
+    generate(
+        "I'm Kathleen. How can I help you?",
+        "en_US-kathleen-low",
+    )
