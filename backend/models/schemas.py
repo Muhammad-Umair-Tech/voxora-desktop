@@ -30,3 +30,22 @@ class UploadVideoResponse(BaseModel):
     duration_seconds: float = Field(
         ..., gt=0, description="Total duration of the uploaded video in seconds."
     )
+
+
+class ProcessVideoRequest(BaseModel):
+    video_id: str = Field(
+        ..., min_length=1, description="ID of the video to be processed."
+    )
+    audio_path: str = Field(
+        ..., min_length=1, description="ID of the AI-generated audio to be processed."
+    )
+    start_time: float = Field(
+        ...,
+        gt=0,
+        description="Video timestamp where the audio will be added/overlayed.",
+    )
+    replace_audio: bool = True
+
+
+class ProcessVideoResponse(BaseModel):
+    output_url: str

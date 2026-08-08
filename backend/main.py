@@ -14,18 +14,21 @@ backend_dir = os.path.dirname(os.path.abspath(__file__))
 if backend_dir not in sys.path:
     sys.path.insert(0, backend_dir)
 
-# Now safe to import local modules
 from utils.port_finder import find_free_port
 import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from routers.audio import router as audio_router
 from routers.video import router as video_router
+from routers.system import router as system_router
 from services.video_service import FFMPEG_EXE
+from pathlib import Path
+import tempfile
 
 app = FastAPI(title="Voxora")
 app.include_router(audio_router)
 app.include_router(video_router)
+app.include_router(system_router)
 
 
 # Example API route
@@ -33,6 +36,10 @@ app.include_router(video_router)
 def health_check():
     return {"status": "ok"}
 
+
+# Define the base temp directory for all Voxora files
+voxora_temp_dir = Path(tempfile.gettempdir()) / "voxora"
+voxora_temp_dir.mkdir(parents=True, exist_ok=True)
 
 # Path to built frontend static files
 # When frozen by PyInstaller, use sys._MEIPASS to find bundled assets
@@ -43,6 +50,9 @@ if getattr(sys, "frozen", False):
 else:
     # Running in development mode
     dist_path = os.path.join(os.path.dirname(__file__), "../frontend/dist")
+
+# Mount the Voxora temp directory BEFORE the catch-all SPA route
+app.mount("/files", StaticFiles(directory=str(voxora_temp_dir)), name="files")
 
 # Mount static files AFTER API routes so API endpoints take priority
 

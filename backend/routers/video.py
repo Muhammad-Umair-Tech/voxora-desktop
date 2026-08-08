@@ -3,7 +3,12 @@ from pathlib import Path
 import tempfile
 import uuid
 from moviepy import VideoFileClip
-from models.schemas import UploadVideoResponse
+from models.schemas import (
+    UploadVideoResponse,
+    ProcessVideoRequest,
+    ProcessVideoResponse,
+)
+from services import video_service
 
 router = APIRouter(prefix="/api", tags=["Video"])
 
@@ -31,7 +36,7 @@ async def upload_video(file: UploadFile = File(...)):
     and returns its assigned video_id and duration.
     """
     # Validate file extension
-    file_extension = Path(file.filename or "").suffix.lower
+    file_extension = Path(file.filename or "").suffix.lower()
     if file_extension not in ALLOWED_EXTENSIONS:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -39,7 +44,7 @@ async def upload_video(file: UploadFile = File(...)):
         )
 
     # Prepare storage destination
-    video_id = uuid.uuid4.hex
+    video_id = uuid.uuid4().hex
     output_dir = get_video_output_dir()
     saved_filename = f"{video_id}{file_extension}"
     saved_path = output_dir / saved_filename
@@ -72,3 +77,50 @@ async def upload_video(file: UploadFile = File(...)):
         ) from e
 
     return UploadVideoResponse(video_id=video_id, duration_seconds=duration_seconds)
+
+
+@router.post(
+    "/process-video",
+    response_model=ProcessVideoResponse,
+    status_code=status.HTTP_200_OK,
+)
+async def process_video(request: ProcessVideoRequest):
+    """
+    Adds generated audio into the uploaded video and returns a URL to the result.
+    """
+    # Resolve the uploaded video path
+    video_dir = get_video_output_dir()
+
+    # We use glob because the extension might be .mp4, .mkv, .mov, or .avi
+    video_files = list(video_dir.glob(f"{request.video_id}.*"))
+    if not video_files:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Video with ID '{request.video_id}' not found.",
+        )
+    video_path = video_files[0]
+
+    # Verify the audio file exists
+    audio_path = Path(request.audio_path)
+    if not audio_path.exists():
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Audio file not found at '{request.audio_path}'.",
+        )
+
+    # Process the video using the synchronous video_service
+    try:
+        output_path = video_service.process(
+            video_path=video_path,
+            audio_path=audio_path,
+            start_time=request.start_time,
+            replace_audio=request.replace_audio,
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Video processing failed: {str(e)}",
+        )
+
+    # Return the URL pointing to the static file mount
+    return ProcessVideoResponse(output_url=f"/outputs/{output_path.name}")

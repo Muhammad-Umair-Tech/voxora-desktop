@@ -38,17 +38,17 @@
   - Save to `%TEMP%\voxora\video\`.
   - Read duration via `moviepy.VideoFileClip`.
   - Return `{ video_id, duration_seconds }`.
-- [ ] **3.3** Implement `backend/services/video_service.py` — `process(video_path, audio_path, start_time, replace_audio) -> Path`:
+- [DONE] **3.3** Implement `backend/services/video_service.py` — `process(video_path, audio_path, start_time, replace_audio) -> Path`:
   - Load `VideoFileClip` and `AudioFileClip`.
   - Clamp `start_time` to `max(0, min(start_time, video.duration - audio.duration))`.
   - If `replace_audio`: set the audio clip at the clamped start time on a silent video.
   - If overlay: build a `CompositeAudioClip([original_audio, new_audio.set_start(start_time)])`.
   - Write output to `%TEMP%\voxora\output\<uuid>.mp4`.
   - Return output path.
-- [ ] **3.4** Implement `POST /api/process-video` route in `backend/routers/video.py` using the service above. Return `{ output_url }` pointing to the static file mount.
-- [ ] **3.5** Mount a `StaticFiles` route in `backend/main.py` at `/files` serving the Voxora temp directory.
-- [ ] **3.6** Implement `backend/routers/system.py` — `GET /api/shutdown`: send response then schedule `os.kill(os.getpid(), signal.SIGTERM)` via `asyncio.get_event_loop().call_later(0.5, ...)`.
-- [ ] **3.7** Test the full video pipeline: upload a video, run a generate-audio call, call process-video, and confirm the output `.mp4` plays correctly with the embedded audio.
+- [DONE] **3.4** Implement `POST /api/process-video` route in `backend/routers/video.py` using the service above. Return `{ output_url }` pointing to the static file mount.
+- [DONE] **3.5** Mount a `StaticFiles` route in `backend/main.py` at `/files` serving the Voxora temp directory.
+- [DONE] **3.6** Implement `backend/routers/system.py` — `GET /api/shutdown`: send response then schedule `os.kill(os.getpid(), signal.SIGTERM)` via `asyncio.get_event_loop().call_later(0.5, ...)`.
+- [DONE] **3.7** Test the full video pipeline: upload a video, run a generate-audio call, call process-video, and confirm the output `.mp4` plays correctly with the embedded audio.
 
 ---
 
