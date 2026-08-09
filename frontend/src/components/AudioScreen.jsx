@@ -2,11 +2,37 @@ import React, { useState, useRef } from "react";
 import { Upload, Play, Check, Mic, FileText, Trash2 } from "lucide-react";
 import "../styles/audio.css";
 
+// Import audio files from assets
+import alanVoice from "../assets/alan_voice.wav";
+import samVoice from "../assets/sam_voice.wav";
+import kathleenVoice from "../assets/kathleen_voice.wav";
+import bryceVoice from "../assets/bryce_voice.wav";
+
 const VOICES = [
-  { id: "alan", name: "Alan", bars: [6, 14, 9, 20, 11, 16, 7] },
-  { id: "semaine", name: "Sam", bars: [10, 18, 8, 13, 20, 9, 15] },
-  { id: "bryce", name: "Bryce", bars: [14, 8, 19, 10, 6, 17, 12] },
-  { id: "kathleen", name: "Kathleen", bars: [8, 16, 12, 20, 9, 14, 6] },
+  {
+    id: "en_GB-alan-medium",
+    name: "Alan",
+    file: alanVoice,
+    bars: [6, 14, 9, 20, 11, 16, 7],
+  },
+  {
+    id: "en_GB-semaine-medium",
+    name: "Sam",
+    file: samVoice,
+    bars: [10, 18, 8, 13, 20, 9, 15],
+  },
+  {
+    id: "en_US-bryce-medium",
+    name: "Bryce",
+    file: bryceVoice,
+    bars: [14, 8, 19, 10, 6, 17, 12],
+  },
+  {
+    id: "en_US-kathleen-low",
+    name: "Kathleen",
+    file: kathleenVoice,
+    bars: [8, 16, 12, 20, 9, 14, 6],
+  },
 ];
 
 function Waveform({ bars, isAnimating, className = "" }) {
@@ -32,8 +58,10 @@ export default function VoxoraAudioScreen({ currentTheme }) {
   const [animatingVoice, setAnimatingVoice] = useState(null);
   const [fileName, setFileName] = useState("");
   const [isDragging, setIsDragging] = useState(false);
+
   const fileInputRef = useRef(null);
   const animationTimeoutRef = useRef(null);
+  const audioRef = useRef(null); // Ref to keep track of the playing Audio instance
 
   const processFile = (file) => {
     if (!file) return;
@@ -93,15 +121,30 @@ export default function VoxoraAudioScreen({ currentTheme }) {
     processFile(file);
   };
 
-  const handleVoiceSelect = (voiceId) => {
-    setVoice(voiceId);
+  const handleVoiceSelect = (selectedVoice) => {
+    setVoice(selectedVoice.id);
+
+    // Stop currently playing audio if any
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+
+    // Play selected voice audio
+    if (selectedVoice.file) {
+      const newAudio = new Audio(selectedVoice.file);
+      audioRef.current = newAudio;
+      newAudio
+        .play()
+        .catch((err) => console.error("Audio playback error:", err));
+    }
 
     // Clear any active animation timeout to restart seamlessly on rapid clicks
     if (animationTimeoutRef.current) {
       clearTimeout(animationTimeoutRef.current);
     }
 
-    setAnimatingVoice(voiceId);
+    setAnimatingVoice(selectedVoice.id);
 
     animationTimeoutRef.current = setTimeout(() => {
       setAnimatingVoice(null);
@@ -207,7 +250,7 @@ export default function VoxoraAudioScreen({ currentTheme }) {
                 return (
                   <button
                     key={v.id}
-                    onClick={() => handleVoiceSelect(v.id)}
+                    onClick={() => handleVoiceSelect(v)}
                     className={`vx-border vx-hard-shadow-sm vx-press relative flex flex-col items-center gap-3 py-4 px-2 rounded-md ${
                       selected ? "vx-voice-card--selected" : "vx-voice-card"
                     }`}
