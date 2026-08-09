@@ -9,7 +9,7 @@ export default function VideoPlayerPanel() {
   const fileInputRef = useRef(null);
 
   const [videoSrc, setVideoSrc] = useState(null);
-  const [fileName, setFileName] = useState("No file uploaded.");
+  const [fileName, setFileName] = useState("No video uploaded.");
   const [timestamps, setTimestamps] = useState([]);
   const [activeId, setActiveId] = useState(null);
 
@@ -35,7 +35,7 @@ export default function VideoPlayerPanel() {
       URL.revokeObjectURL(videoSrc);
     }
     setVideoSrc(null);
-    setFileName("No file uploaded.");
+    setFileName("No video uploaded.");
     setTimestamps([]);
     setActiveId(null);
     if (fileInputRef.current) {
