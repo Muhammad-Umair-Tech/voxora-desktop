@@ -9,7 +9,7 @@ export default function VideoPlayerPanel() {
   const fileInputRef = useRef(null);
 
   const [videoSrc, setVideoSrc] = useState(null);
-  const [fileName, setFileName] = useState("");
+  const [fileName, setFileName] = useState("No file uploaded.");
   const [timestamps, setTimestamps] = useState([]);
   const [activeId, setActiveId] = useState(null);
 
