@@ -167,6 +167,68 @@
   border-color: var(--primary);
 }
 
+/* ---------- Generation Loader ---------- */
+.vx-loader-box {
+  background: var(--surface-muted);
+  border-style: dashed;
+}
+
+.vx-loader-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.vx-loader-bars span {
+  width: 4px;
+  height: 100%;
+  background: var(--primary);
+  border-radius: 2px;
+  animation: vx-loader-bounce 0.9s ease-in-out infinite;
+  transform-origin: bottom;
+}
+
+.vx-loader-bars span:nth-child(1) {
+  animation-delay: 0s;
+}
+.vx-loader-bars span:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.vx-loader-bars span:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.vx-loader-bars span:nth-child(4) {
+  animation-delay: 0.3s;
+}
+.vx-loader-bars span:nth-child(5) {
+  animation-delay: 0.4s;
+}
+
+@keyframes vx-loader-bounce {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+/* ---------- Error State ---------- */
+.vx-error-box {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #b91c1c;
+}
+
+.vx-root[data-theme="dark"] .vx-error-box {
+  background: #451a1a;
+  color: #fca5a5;
+  border-color: #fca5a5;
+}
+
 /* ---------- Disabled State Styling ---------- */
 .vx-btn-disabled {
   opacity: 0.45;

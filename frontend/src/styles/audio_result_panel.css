@@ -1,0 +1,25 @@
+/* ---------- Waveform Container ---------- */
+.vx-waveform-container {
+  background: var(--surface-muted);
+}
+
+/* ---------- Play / Save Buttons ---------- */
+.vx-play-btn {
+  background: var(--accent-container);
+  color: var(--ink);
+}
+
+.vx-play-btn:hover:not(.vx-btn-disabled) {
+  background: var(--accent);
+  color: var(--primary-ink);
+}
+
+.vx-save-btn {
+  background: var(--primary-container);
+  color: var(--primary-container-ink);
+}
+
+.vx-save-btn:hover {
+  background: var(--primary);
+  color: var(--primary-ink);
+}

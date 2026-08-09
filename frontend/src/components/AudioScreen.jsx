@@ -1,6 +1,17 @@
-import React, { useState, useRef } from "react";
-import { Upload, Play, Check, Mic, FileText, Trash2 } from "lucide-react";
-import "../styles/audio.css";
+import React, { useState, useRef, useEffect } from "react";
+import {
+  Upload,
+  Play,
+  Pause,
+  Download,
+  Check,
+  Mic,
+  FileText,
+  Trash2,
+} from "lucide-react";
+import WaveSurfer from "wavesurfer.js";
+import "../styles/audio_screen.css";
+import AudioResultPanel from "./AudioResultPanel.jsx";
 
 // Import audio files from assets
 import alanVoice from "../assets/alan_voice.wav";
@@ -54,10 +65,14 @@ function Waveform({ bars, isAnimating, className = "" }) {
 
 export default function VoxoraAudioScreen({ currentTheme }) {
   const [script, setScript] = useState("");
-  const [voice, setVoice] = useState("alan");
+  const [voice, setVoice] = useState(VOICES[0].id);
   const [animatingVoice, setAnimatingVoice] = useState(null);
   const [fileName, setFileName] = useState("");
   const [isDragging, setIsDragging] = useState(false);
+
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [genError, setGenError] = useState("");
+  const [audioResult, setAudioResult] = useState(null); // { audioUrl, duration }
 
   const fileInputRef = useRef(null);
   const animationTimeoutRef = useRef(null);
@@ -92,6 +107,8 @@ export default function VoxoraAudioScreen({ currentTheme }) {
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+    setAudioResult(null);
+    setGenError("");
   };
 
   const handleFileChange = (e) => {
@@ -149,6 +166,48 @@ export default function VoxoraAudioScreen({ currentTheme }) {
     animationTimeoutRef.current = setTimeout(() => {
       setAnimatingVoice(null);
     }, 900); // 900ms duration for the pulse burst
+  };
+
+  const handleGenerate = async () => {
+    if (isScriptEmpty || isGenerating) return;
+
+    setIsGenerating(true);
+    setGenError("");
+
+    try {
+      const res = await fetch("/api/generate-audio", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: script, voice_id: voice }),
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        throw new Error(body?.detail || "Failed to generate audio.");
+      }
+
+      const data = await res.json();
+      setAudioResult({ audioUrl: data.audio_url, duration: data.duration });
+    } catch (err) {
+      console.error("Audio generation error:", err);
+      setGenError(err.message || "Something went wrong generating audio.");
+      setAudioResult(null);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleSave = () => {
+    if (!audioResult?.audioUrl) return;
+
+    const link = document.createElement("a");
+    link.href = audioResult.audioUrl;
+    link.download = fileName
+      ? `${fileName.replace(/\.[^/.]+$/, "")}.wav`
+      : "voxora-audio.wav";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const isScriptEmpty = script.trim().length === 0;
@@ -272,16 +331,49 @@ export default function VoxoraAudioScreen({ currentTheme }) {
 
           <div className="vx-divider" />
 
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-1">
-            <button
-              disabled={isScriptEmpty}
-              className={`vx-border vx-hard-shadow vx-generate-btn w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-3.5 rounded-md vx-display text-base font-bold uppercase tracking-tight ${
-                isScriptEmpty ? "vx-btn-disabled" : "vx-press"
-              }`}
-            >
-              Generate audio
-              <Play size={17} fill="currentColor" />
-            </button>
+          <div className="flex flex-col gap-4 pt-1">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <button
+                onClick={handleGenerate}
+                disabled={isScriptEmpty || isGenerating}
+                className={`vx-border vx-hard-shadow vx-generate-btn w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-3.5 rounded-md vx-display text-base font-bold uppercase tracking-tight ${
+                  isScriptEmpty || isGenerating ? "vx-btn-disabled" : "vx-press"
+                }`}
+              >
+                {isGenerating ? "Generating..." : "Generate audio"}
+                {!isGenerating && <Play size={17} fill="currentColor" />}
+              </button>
+            </div>
+
+            {/* Reserved space for the loader so the layout doesn't jump */}
+            {isGenerating && (
+              <div className="vx-loader-box vx-border rounded-md flex items-center gap-3 px-4 py-3">
+                <div className="vx-loader-bars" aria-hidden="true">
+                  <span />
+                  <span />
+                  <span />
+                  <span />
+                  <span />
+                </div>
+                <span className="vx-mono text-xs font-semibold uppercase tracking-wide vx-text-soft">
+                  Generating audio...
+                </span>
+              </div>
+            )}
+
+            {!isGenerating && genError && (
+              <div className="vx-error-box vx-border rounded-md px-4 py-3 vx-mono text-xs font-semibold">
+                {genError}
+              </div>
+            )}
+
+            {!isGenerating && audioResult && (
+              <AudioResultPanel
+                src={audioResult.audioUrl}
+                currentTheme={currentTheme}
+                onSave={handleSave}
+              />
+            )}
           </div>
         </div>
       </main>

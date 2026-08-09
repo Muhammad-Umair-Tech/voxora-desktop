@@ -47,8 +47,13 @@ async def generate_audio(request: GenerateAudioRequest):
             detail=str(e),
         ) from e
 
-    # Return audio file relative path / URL string and calculated duration
+    # `wav_path` is an absolute filesystem path (e.g. .../voxora/audio/tts_xxx.wav).
+    # The app mounts StaticFiles at "/files" -> "<temp>/voxora", so the file is
+    # reachable over HTTP at "/files/audio/<filename>". Return that browser-usable
+    # URL instead of the raw OS path so the frontend can play/download it.
+    audio_url = f"/files/audio/{wav_path.name}"
+
     return GenerateAudioResponse(
-        audio_url=str(wav_path),
+        audio_url=audio_url,
         duration=duration,
     )
