@@ -75,6 +75,7 @@ async def list_audio_library():
         AudioLibraryItem(
             name=wav_file.stem,
             audio_url=f"/files/audio/{wav_file.name}",
+            path=str(wav_file),
             modified_at=wav_file.stat().st_mtime,
         )
         for wav_file in output_dir.glob("*.wav")

@@ -1,15 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import "../styles/overlay_replace_toggle.css";
 
-// Purely visual for now — no overlay/replace behavior is wired up yet.
-export default function OverlayReplaceToggle() {
-  const [mode, setMode] = useState("overlay");
-
+export default function OverlayReplaceToggle({ mode, onChange }) {
   return (
     <div className="vx-border vx-hard-shadow vx-overlay-toggle flex rounded-md overflow-hidden h-14">
       <button
         type="button"
-        onClick={() => setMode("overlay")}
+        onClick={() => onChange?.("overlay")}
         data-active={mode === "overlay"}
         className="flex-1 vx-mono text-xs font-bold uppercase tracking-wide flex items-center justify-center vx-overlay-toggle-btn"
       >
@@ -17,7 +14,7 @@ export default function OverlayReplaceToggle() {
       </button>
       <button
         type="button"
-        onClick={() => setMode("replace")}
+        onClick={() => onChange?.("replace")}
         data-active={mode === "replace"}
         className="flex-1 vx-mono text-xs font-bold uppercase tracking-wide flex items-center justify-center vx-overlay-toggle-btn"
       >

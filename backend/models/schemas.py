@@ -55,7 +55,8 @@ class ProcessVideoResponse(BaseModel):
 
 class AudioLibraryItem(BaseModel):
     name: str = Field(..., min_length=1, description="The name of the audio.")
-    audio_url: str = Field(
-        ..., min_length=1, description="The temp folder path to the audio."
+    audio_url: str = Field(..., min_length=1, description="The URL of the audio.")
+    path: str = Field(
+        ..., min_length=1, description="The actual folder path to the audio."
     )
     modified_at: float = Field(..., gt=0, description="The modified time of the audio.")

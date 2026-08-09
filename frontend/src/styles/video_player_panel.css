@@ -12,3 +12,20 @@
 .vx-video-btn:hover {
   background: var(--surface-muted);
 }
+
+/* ---------- Upload Status ---------- */
+.vx-upload-status--pending {
+  color: var(--ink-soft);
+}
+
+.vx-upload-status--ready {
+  color: var(--primary);
+}
+
+.vx-upload-status--error {
+  color: #b91c1c;
+}
+
+.vx-root[data-theme="dark"] .vx-upload-status--error {
+  color: #fca5a5;
+}

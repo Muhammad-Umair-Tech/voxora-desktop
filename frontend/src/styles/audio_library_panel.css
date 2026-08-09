@@ -16,6 +16,21 @@
 .vx-audio-lib-item {
   background: var(--surface);
   color: var(--ink);
+  width: 100%;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.vx-audio-lib-item:hover {
+  background: var(--surface-muted);
+}
+
+.vx-audio-lib-item--selected,
+.vx-audio-lib-item--selected:hover {
+  background: var(--primary-container);
+  color: var(--primary-container-ink);
 }
 
 /* ---------- Refresh Spin ---------- */

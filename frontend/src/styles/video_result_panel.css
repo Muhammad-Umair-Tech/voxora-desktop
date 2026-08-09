@@ -1,0 +1,21 @@
+/* ---------- Play Button ---------- */
+.vx-video-result-play-btn {
+  background: var(--accent-container);
+  color: var(--ink);
+}
+
+.vx-video-result-play-btn:hover {
+  background: var(--accent);
+  color: var(--primary-ink);
+}
+
+/* ---------- Download Button ---------- */
+.vx-video-result-download-btn {
+  background: var(--primary-container);
+  color: var(--primary-container-ink);
+}
+
+.vx-video-result-download-btn:hover {
+  background: var(--primary);
+  color: var(--primary-ink);
+}
