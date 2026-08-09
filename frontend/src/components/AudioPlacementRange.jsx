@@ -17,7 +17,7 @@ export function formatTimestamp(totalSeconds) {
   return `${minutes}:${paddedSeconds}`;
 }
 
-export default function TimestampMarkers({
+export default function AudioPlacementRange({
   videoDuration = 0,
   selectedAudio = null,
   startTime = 0,

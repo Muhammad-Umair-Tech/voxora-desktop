@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Film, Upload, FlaskConical, Trash2 } from "lucide-react";
 import "../styles/video_player_panel.css";
-import TimestampMarkers, { formatTimestamp } from "./TimestampMarkers";
+import AudioPlacementRange, { formatTimestamp } from "./AudioPlacementRange";
 import sampleVideo from "../assets/sample_video.mp4";
 
 export default function VideoPlayerPanel({ selectedAudio = null }) {
@@ -166,7 +166,7 @@ export default function VideoPlayerPanel({ selectedAudio = null }) {
         )}
       </div>
 
-      <TimestampMarkers
+      <AudioPlacementRange
         videoDuration={videoDuration}
         selectedAudio={selectedAudio}
         startTime={startTime}
