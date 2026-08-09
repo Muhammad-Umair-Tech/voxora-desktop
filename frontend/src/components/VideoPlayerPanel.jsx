@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Film, Upload, FlaskConical } from "lucide-react";
+import { Film, Upload, FlaskConical, Trash2 } from "lucide-react";
 import "../styles/video_player_panel.css";
 import TimestampMarkers, { formatTimestamp } from "./TimestampMarkers";
 import sampleVideo from "../assets/sample_video.mp4";
@@ -28,6 +28,19 @@ export default function VideoPlayerPanel() {
     setFileName(name);
     setTimestamps([{ id: "t-0", seconds: 0, label: "0:00" }]);
     setActiveId("t-0");
+  };
+
+  const handleClear = () => {
+    if (videoSrc && videoSrc.startsWith("blob:")) {
+      URL.revokeObjectURL(videoSrc);
+    }
+    setVideoSrc(null);
+    setFileName("No file uploaded.");
+    setTimestamps([]);
+    setActiveId(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handleFileChange = (e) => {
@@ -99,22 +112,35 @@ export default function VideoPlayerPanel() {
               accept="video/*"
               className="hidden"
             />
-            <button
-              type="button"
-              onClick={handleUploadClick}
-              className="vx-border vx-hard-shadow-sm vx-press vx-video-btn flex items-center gap-1.5 px-3 py-1.5 rounded-md vx-mono text-xs font-semibold uppercase tracking-wide"
-            >
-              <Upload size={13} />
-              Upload
-            </button>
-            <button
-              type="button"
-              onClick={handleLoadSample}
-              className="vx-border vx-hard-shadow-sm vx-press vx-video-btn flex items-center gap-1.5 px-3 py-1.5 rounded-md vx-mono text-xs font-semibold uppercase tracking-wide"
-            >
-              <FlaskConical size={13} />
-              Load Sample
-            </button>
+            {videoSrc ? (
+              <button
+                type="button"
+                onClick={handleClear}
+                className="vx-border vx-hard-shadow-sm vx-press vx-clear-btn flex items-center gap-1.5 px-3 py-1.5 rounded-md vx-mono text-xs font-semibold uppercase tracking-wide"
+              >
+                <Trash2 size={13} />
+                Clear
+              </button>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={handleUploadClick}
+                  className="vx-border vx-hard-shadow-sm vx-press vx-video-btn flex items-center gap-1.5 px-3 py-1.5 rounded-md vx-mono text-xs font-semibold uppercase tracking-wide"
+                >
+                  <Upload size={13} />
+                  Upload
+                </button>
+                <button
+                  type="button"
+                  onClick={handleLoadSample}
+                  className="vx-border vx-hard-shadow-sm vx-press vx-video-btn flex items-center gap-1.5 px-3 py-1.5 rounded-md vx-mono text-xs font-semibold uppercase tracking-wide"
+                >
+                  <FlaskConical size={13} />
+                  Load Sample
+                </button>
+              </>
+            )}
           </div>
         </div>
 
