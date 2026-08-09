@@ -1,21 +1,15 @@
-/* ---------- Timestamp Chips ---------- */
-.vx-marker-chip {
-  background: var(--surface);
-  color: var(--ink);
+/* ---------- Audio Placement Slider ---------- */
+.vx-slider-knob {
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  transition: transform 0.1s ease;
 }
 
-.vx-marker-chip--active {
-  background: var(--primary-container);
-  color: var(--primary-container-ink);
+.vx-slider-knob:hover {
+  transform: translateY(-50%) scale(1.1);
 }
 
-/* ---------- Mark (Add Timestamp) Button ---------- */
-.vx-marker-add-btn {
-  background: var(--accent-container);
-  color: var(--ink);
-}
-
-.vx-marker-add-btn:hover:not(.vx-btn-disabled) {
-  background: var(--accent);
-  color: var(--primary-ink);
+.vx-slider-knob:active {
+  transform: translateY(-50%) scale(0.95);
 }

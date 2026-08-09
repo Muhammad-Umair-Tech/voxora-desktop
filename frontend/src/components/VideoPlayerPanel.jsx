@@ -4,12 +4,14 @@ import "../styles/video_player_panel.css";
 import TimestampMarkers, { formatTimestamp } from "./TimestampMarkers";
 import sampleVideo from "../assets/sample_video.mp4";
 
-export default function VideoPlayerPanel() {
+export default function VideoPlayerPanel({ selectedAudio = null }) {
   const videoRef = useRef(null);
   const fileInputRef = useRef(null);
 
   const [videoSrc, setVideoSrc] = useState(null);
   const [fileName, setFileName] = useState("No video uploaded.");
+  const [videoDuration, setVideoDuration] = useState(0);
+  const [startTime, setStartTime] = useState(0);
   const [timestamps, setTimestamps] = useState([]);
   const [activeId, setActiveId] = useState(null);
 
@@ -26,6 +28,7 @@ export default function VideoPlayerPanel() {
   const loadVideo = (src, name) => {
     setVideoSrc(src);
     setFileName(name);
+    setStartTime(0);
     setTimestamps([{ id: "t-0", seconds: 0, label: "0:00" }]);
     setActiveId("t-0");
   };
@@ -36,6 +39,8 @@ export default function VideoPlayerPanel() {
     }
     setVideoSrc(null);
     setFileName("No video uploaded.");
+    setVideoDuration(0);
+    setStartTime(0);
     setTimestamps([]);
     setActiveId(null);
     if (fileInputRef.current) {
@@ -52,10 +57,12 @@ export default function VideoPlayerPanel() {
 
   const handleUploadClick = () => fileInputRef.current?.click();
 
-  // Loads the bundled sample_video.mp4 from /src/assets so the video +
-  // timestamp flow can be tested without needing a real upload.
   const handleLoadSample = () => {
     loadVideo(sampleVideo, "sample_video.mp4");
+  };
+
+  const handleLoadedMetadata = (e) => {
+    setVideoDuration(e.target.duration || 0);
   };
 
   const handleSelectTimestamp = (ts) => {
@@ -65,21 +72,6 @@ export default function VideoPlayerPanel() {
     }
   };
 
-  const handleAddTimestamp = () => {
-    if (!videoRef.current) return;
-    const seconds = videoRef.current.currentTime;
-    const id = `t-${Date.now()}`;
-
-    setTimestamps((prev) =>
-      [...prev, { id, seconds, label: formatTimestamp(seconds) }].sort(
-        (a, b) => a.seconds - b.seconds,
-      ),
-    );
-    setActiveId(id);
-  };
-
-  // Keeps the marker row in sync while the video plays, highlighting the
-  // most recent timestamp the playhead has passed.
   const handleTimeUpdate = (e) => {
     const current = e.target.currentTime;
     let nearest = null;
@@ -150,6 +142,7 @@ export default function VideoPlayerPanel() {
               ref={videoRef}
               src={videoSrc}
               controls
+              onLoadedMetadata={handleLoadedMetadata}
               onTimeUpdate={handleTimeUpdate}
               className="w-full h-full"
             />
@@ -174,11 +167,10 @@ export default function VideoPlayerPanel() {
       </div>
 
       <TimestampMarkers
-        timestamps={timestamps}
-        activeId={activeId}
-        disabled={!videoSrc}
-        onSelect={handleSelectTimestamp}
-        onAdd={handleAddTimestamp}
+        videoDuration={videoDuration}
+        selectedAudio={selectedAudio}
+        startTime={startTime}
+        onStartTimeChange={setStartTime}
       />
     </>
   );
