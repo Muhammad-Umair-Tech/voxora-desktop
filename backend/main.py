@@ -1,6 +1,7 @@
 import os
 import sys
 import io
+from contextlib import asynccontextmanager
 
 # Fix PyInstaller console=False issue FIRST (sys.stdout and sys.stderr are None)
 if sys.stdout is None:
@@ -22,10 +23,18 @@ from routers.audio import router as audio_router
 from routers.video import router as video_router
 from routers.system import router as system_router
 from services.video_service import FFMPEG_EXE
+from services.tempfile_service import cleanup_old_temp_files, VOXORA_TEMP_DIR
 from pathlib import Path
-import tempfile
 
-app = FastAPI(title="Voxora")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Run temporary file cleanup on startup
+    cleanup_old_temp_files(max_age_hours=24)
+    yield
+
+
+app = FastAPI(title="Voxora", lifespan=lifespan)
 app.include_router(audio_router)
 app.include_router(video_router)
 app.include_router(system_router)
@@ -37,8 +46,8 @@ def health_check():
     return {"status": "ok"}
 
 
-# Define the base temp directory for all Voxora files
-voxora_temp_dir = Path(tempfile.gettempdir()) / "voxora"
+# Ensure the base temp directory exists
+voxora_temp_dir = VOXORA_TEMP_DIR
 voxora_temp_dir.mkdir(parents=True, exist_ok=True)
 
 # Path to built frontend static files
