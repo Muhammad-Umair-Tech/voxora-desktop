@@ -1,0 +1,21 @@
+/* ---------- Timestamp Chips ---------- */
+.vx-marker-chip {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.vx-marker-chip--active {
+  background: var(--primary-container);
+  color: var(--primary-container-ink);
+}
+
+/* ---------- Mark (Add Timestamp) Button ---------- */
+.vx-marker-add-btn {
+  background: var(--accent-container);
+  color: var(--ink);
+}
+
+.vx-marker-add-btn:hover:not(.vx-btn-disabled) {
+  background: var(--accent);
+  color: var(--primary-ink);
+}

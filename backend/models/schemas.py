@@ -48,4 +48,14 @@ class ProcessVideoRequest(BaseModel):
 
 
 class ProcessVideoResponse(BaseModel):
-    output_url: str
+    output_url: str = Field(
+        ..., min_length=1, description="The path to the final processed video."
+    )
+
+
+class AudioLibraryItem(BaseModel):
+    name: str = Field(..., min_length=1, description="The name of the audio.")
+    audio_url: str = Field(
+        ..., min_length=1, description="The temp folder path to the audio."
+    )
+    modified_at: float = Field(..., gt=0, description="The modified time of the audio.")

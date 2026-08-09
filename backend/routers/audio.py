@@ -1,8 +1,9 @@
 import tempfile
 from pathlib import Path
 from fastapi import APIRouter, HTTPException, status
+from pydantic import BaseModel
 
-from models.schemas import GenerateAudioRequest, GenerateAudioResponse
+from models.schemas import GenerateAudioRequest, GenerateAudioResponse, AudioLibraryItem
 from services import tts_service
 
 router = APIRouter(prefix="/api", tags=["Audio"])
@@ -57,3 +58,28 @@ async def generate_audio(request: GenerateAudioRequest):
         audio_url=audio_url,
         duration=duration,
     )
+
+
+@router.get(
+    "/audio-library",
+    response_model=list[AudioLibraryItem],
+)
+async def list_audio_library():
+    """
+    Lists previously generated .wav files sitting in the temp audio folder,
+    newest first, so the frontend can show them as an audio library.
+    """
+    output_dir = get_audio_output_dir()
+
+    items = [
+        AudioLibraryItem(
+            name=wav_file.stem,
+            audio_url=f"/files/audio/{wav_file.name}",
+            modified_at=wav_file.stat().st_mtime,
+        )
+        for wav_file in output_dir.glob("*.wav")
+    ]
+
+    items.sort(key=lambda item: item.modified_at, reverse=True)
+
+    return items

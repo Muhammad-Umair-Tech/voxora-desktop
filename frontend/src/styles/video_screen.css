@@ -1,0 +1,7 @@
+/* ---------- Layout ---------- */
+/* Base tokens (.vx-root, .vx-border, .vx-card, .vx-mono, etc.) live in
+   audio_screen.css and are shared across the whole app. */
+
+.vx-video-grid {
+  align-items: stretch;
+}

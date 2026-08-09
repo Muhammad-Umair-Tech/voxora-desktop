@@ -63,7 +63,7 @@ function Waveform({ bars, isAnimating, className = "" }) {
   );
 }
 
-export default function VoxoraAudioScreen({ currentTheme }) {
+export default function AudioScreen({ currentTheme }) {
   const [script, setScript] = useState("");
   const [voice, setVoice] = useState(VOICES[0].id);
   const [animatingVoice, setAnimatingVoice] = useState(null);
@@ -269,7 +269,7 @@ export default function VoxoraAudioScreen({ currentTheme }) {
             >
               <FileText size={16} className="vx-text-soft" />
               <span className="text-sm truncate vx-text-soft select-none">
-                {fileName ? fileName : "Drop a .txt file, or import one"}
+                {fileName ? fileName : "Drop a .txt file, or import one."}
               </span>
             </div>
 

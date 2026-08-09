@@ -1,0 +1,25 @@
+.vx-overlay-toggle {
+  background: var(--surface);
+}
+
+.vx-overlay-toggle-btn {
+  color: var(--ink);
+  cursor: pointer;
+  border-right: 2.5px solid var(--ink);
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.vx-overlay-toggle-btn:last-child {
+  border-right: none;
+}
+
+.vx-overlay-toggle-btn:hover {
+  background: var(--surface-muted);
+}
+
+.vx-overlay-toggle-btn[data-active="true"] {
+  background: var(--primary-container);
+  color: var(--primary-container-ink);
+}

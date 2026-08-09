@@ -1,6 +1,7 @@
 import "../App.css";
 import { useState } from "react";
-import VoxoraAudioScreen from "../components/AudioScreen";
+import AudioScreen from "../components/AudioScreen";
+import VideoScreen from "../components/VideoScreen";
 import { Sun, Moon, LogOut } from "lucide-react";
 
 function Waveform({ bars, className = "" }) {
@@ -78,7 +79,11 @@ function App() {
         </div>
       </nav>
 
-      <VoxoraAudioScreen currentTheme={theme} />
+      {activeTab === "audio" ? (
+        <AudioScreen currentTheme={theme} />
+      ) : (
+        <VideoScreen currentTheme={theme} />
+      )}
     </div>
   );
 }

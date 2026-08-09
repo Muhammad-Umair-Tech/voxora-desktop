@@ -1,0 +1,14 @@
+/* ---------- Video Frame ---------- */
+.vx-video-frame {
+  background: #000000;
+}
+
+/* ---------- Upload / Load Sample Buttons ---------- */
+.vx-video-btn {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.vx-video-btn:hover {
+  background: var(--surface-muted);
+}

@@ -1,0 +1,30 @@
+/* ---------- Header ---------- */
+.vx-audio-lib-header {
+  border-bottom: 2.5px solid var(--ink);
+  background: var(--surface-muted);
+}
+
+.vx-audio-lib-refresh {
+  color: var(--ink-soft);
+}
+
+.vx-audio-lib-refresh:hover {
+  color: var(--primary);
+}
+
+/* ---------- List Items ---------- */
+.vx-audio-lib-item {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+/* ---------- Refresh Spin ---------- */
+@keyframes vx-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.vx-spin {
+  animation: vx-spin 0.8s linear infinite;
+}
