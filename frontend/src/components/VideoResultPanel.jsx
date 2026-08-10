@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Play, Pause, Download, Sparkles } from "lucide-react";
 import "../styles/video_result_panel.css";
 
@@ -15,18 +15,23 @@ function formatTime(totalSeconds) {
     .join(":");
 }
 
-// Shown once Add Audio finishes. Deliberately kept as its own card, appended
-// below the source Video panel, rather than replacing the source player in
-// place — the person can still see/scrub the original above the result, and
-// the result reads as a distinct output artifact (same pattern AudioScreen
-// already uses for AudioResultPanel) rather than silently overwriting the
-// preview they were just working with.
 export default function VideoResultPanel({ videoUrl, fileName }) {
+  const panelRef = useRef(null);
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+
+  // Automatically scroll the panel into view when it mounts
+  useEffect(() => {
+    if (panelRef.current) {
+      panelRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center", // "center" ensures the whole panel is visible
+      });
+    }
+  }, []);
 
   if (!videoUrl) return null;
 
@@ -52,7 +57,10 @@ export default function VideoResultPanel({ videoUrl, fileName }) {
   };
 
   return (
-    <div className="vx-border vx-hard-shadow vx-card rounded-md flex flex-col gap-4 p-5 sm:p-6">
+    <div
+      ref={panelRef}
+      className="vx-border vx-hard-shadow vx-card rounded-md flex flex-col gap-4 p-5 sm:p-6"
+    >
       <div className="flex items-center justify-between gap-3">
         <h2 className="vx-mono text-xs font-semibold uppercase tracking-wide flex items-center gap-2">
           <Sparkles size={14} />
