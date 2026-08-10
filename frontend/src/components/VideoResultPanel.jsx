@@ -2,26 +2,11 @@ import React, { useRef, useState, useEffect } from "react";
 import { Play, Pause, Download, Sparkles } from "lucide-react";
 import "../styles/video_result_panel.css";
 
-function formatTime(totalSeconds) {
-  const safeSeconds = Number.isFinite(totalSeconds)
-    ? Math.max(0, totalSeconds)
-    : 0;
-  const hours = Math.floor(safeSeconds / 3600);
-  const minutes = Math.floor((safeSeconds % 3600) / 60);
-  const seconds = Math.floor(safeSeconds % 60);
-
-  return [hours, minutes, seconds]
-    .map((unit) => String(unit).padStart(2, "0"))
-    .join(":");
-}
-
 export default function VideoResultPanel({ videoUrl, fileName }) {
   const panelRef = useRef(null);
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
 
   // Automatically scroll the panel into view when it mounts
   useEffect(() => {
@@ -68,26 +53,19 @@ export default function VideoResultPanel({ videoUrl, fileName }) {
         </h2>
       </div>
 
-      <div className="vx-result-video-frame vx-border rounded-md overflow-hidden relative aspect-video">
+      <div className="vx-result-video-frame vx-border rounded-md overflow-hidden relative aspect-video cursor-default">
         <video
           ref={videoRef}
           src={videoUrl}
-          className="w-full h-full"
-          onLoadedMetadata={(e) => {
+          controls
+          className="w-full h-full cursor-default"
+          onLoadedMetadata={() => {
             setIsReady(true);
-            setDuration(e.target.duration || 0);
           }}
-          onTimeUpdate={(e) => setCurrentTime(e.target.currentTime)}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
           onEnded={() => setIsPlaying(false)}
-          onClick={togglePlay}
         />
-      </div>
-
-      <div className="flex items-center justify-between vx-mono text-xs font-semibold vx-text-soft">
-        <span>{formatTime(currentTime)}</span>
-        <span>{formatTime(duration)}</span>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">

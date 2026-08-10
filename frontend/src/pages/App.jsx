@@ -17,13 +17,60 @@ function Waveform({ bars, className = "" }) {
 function App() {
   const [theme, setTheme] = useState("light");
   const [activeTab, setActiveTab] = useState("audio");
+  const [isShutDown, setIsShutDown] = useState(false);
 
-  const handleQuit = () => {
-    if (window.confirm("Are you sure you want to quit Voxora?")) {
+  const handleQuit = async () => {
+    if (!window.confirm("Are you sure you want to quit Voxora?")) {
+      return;
+    }
+
+    try {
+      await fetch("/api/shutdown");
+    } catch (err) {
+      console.error("Server shutdown call failed:", err);
+    } finally {
+      setIsShutDown(true);
       window.close();
     }
   };
 
+  // 1. Render shutdown message ONLY if isShutDown is true
+  if (isShutDown) {
+    return (
+      <div
+        className="vx-root flex items-center justify-center min-h-screen p-4 sm:p-6"
+        data-theme={theme}
+      >
+        <div className="vx-border vx-hard-shadow vx-card rounded-md p-8 sm:p-10 max-w-md w-full flex flex-col items-center text-center gap-5">
+          {/* Muted decorative waveform icon */}
+          <div className="w-12 h-12 rounded-full vx-border flex items-center justify-center bg-[var(--surface-muted)]">
+            <Waveform
+              bars={[6, 12, 18, 10, 14]}
+              className="text-[var(--ink-soft)]"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <h1 className="vx-display text-2xl sm:text-3xl font-bold tracking-tight">
+              Voxora Has Shut Down
+            </h1>
+            <span className="vx-mono text-xs font-semibold uppercase tracking-wider vx-text-soft">
+              Server Offline
+            </span>
+          </div>
+
+          <div className="vx-divider w-full" />
+
+          <p className="text-sm sm:text-base vx-text-soft">
+            The local application server has been terminated. You can now safely
+            close this browser tab.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. Render the main app by default (when isShutDown is false)
   return (
     <div className="vx-root" data-theme={theme}>
       <nav className="vx-nav">
