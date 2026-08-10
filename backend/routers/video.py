@@ -123,4 +123,4 @@ async def process_video(request: ProcessVideoRequest):
         )
 
     # Return the URL pointing to the static file mount
-    return ProcessVideoResponse(output_url=f"/outputs/{output_path.name}")
+    return ProcessVideoResponse(output_url=f"/files/output/{output_path.name}")

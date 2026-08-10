@@ -41,7 +41,7 @@ class ProcessVideoRequest(BaseModel):
     )
     start_time: float = Field(
         ...,
-        gt=0,
+        ge=0,
         description="Video timestamp where the audio will be added/overlayed.",
     )
     replace_audio: bool = True
@@ -56,6 +56,9 @@ class ProcessVideoResponse(BaseModel):
 class AudioLibraryItem(BaseModel):
     name: str = Field(..., min_length=1, description="The name of the audio.")
     audio_url: str = Field(
-        ..., min_length=1, description="The temp folder path to the audio."
+        ..., min_length=1, description="The web URL path to stream/play the audio."
+    )
+    audio_path: str = Field(
+        ..., min_length=1, description="The absolute local disk path to the audio file."
     )
     modified_at: float = Field(..., gt=0, description="The modified time of the audio.")

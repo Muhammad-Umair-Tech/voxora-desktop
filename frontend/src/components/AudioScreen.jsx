@@ -102,6 +102,8 @@ export default function AudioScreen({ currentTheme }) {
   };
 
   const handleClear = () => {
+    if (isGenerating) return; // Prevent clearing while generating
+
     setScript("");
     setFileName("");
     if (fileInputRef.current) {
@@ -286,7 +288,10 @@ export default function AudioScreen({ currentTheme }) {
               <button
                 type="button"
                 onClick={handleClear}
-                className="vx-border vx-hard-shadow-sm vx-press vx-clear-btn flex items-center justify-center gap-2 px-4 py-3 rounded-md vx-mono text-xs font-semibold uppercase tracking-wide"
+                disabled={isGenerating}
+                className={`vx-border vx-hard-shadow-sm vx-clear-btn flex items-center justify-center gap-2 px-4 py-3 rounded-md vx-mono text-xs font-semibold uppercase tracking-wide ${
+                  isGenerating ? "vx-btn-disabled" : "vx-press"
+                }`}
               >
                 <Trash2 size={15} />
                 Clear

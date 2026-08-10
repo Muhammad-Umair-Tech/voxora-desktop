@@ -1,0 +1,18 @@
+.vx-result-video-frame {
+  background: var(--surface-muted);
+  cursor: pointer;
+}
+
+.vx-result-play-btn {
+  background: var(--primary);
+  color: var(--primary-ink);
+}
+
+.vx-result-download-btn {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.vx-result-download-btn:hover {
+  background: var(--accent-container);
+}

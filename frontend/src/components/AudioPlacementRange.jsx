@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Clock, AlertTriangle } from "lucide-react";
 import "../styles/timestamp_markers.css";
+import useAudioDuration from "../hooks/useAudioDuration";
 
 export function formatTimestamp(totalSeconds) {
   const safeSeconds = Number.isFinite(totalSeconds)
@@ -25,37 +26,7 @@ export default function AudioPlacementRange({
 }) {
   const trackRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [audioDuration, setAudioDuration] = useState(0);
-
-  // Dynamically resolve audio duration from selectedAudio or probe the audio URL directly
-  useEffect(() => {
-    if (!selectedAudio) {
-      setAudioDuration(0);
-      return;
-    }
-
-    if (selectedAudio.duration && !isNaN(selectedAudio.duration)) {
-      setAudioDuration(Number(selectedAudio.duration));
-      return;
-    }
-
-    const audioUrl = selectedAudio.audio_url || selectedAudio.url;
-    if (audioUrl) {
-      const tempAudio = new Audio(audioUrl);
-
-      const handleLoadedMetadata = () => {
-        if (tempAudio.duration && !isNaN(tempAudio.duration)) {
-          setAudioDuration(tempAudio.duration);
-        }
-      };
-
-      tempAudio.addEventListener("loadedmetadata", handleLoadedMetadata);
-
-      return () => {
-        tempAudio.removeEventListener("loadedmetadata", handleLoadedMetadata);
-      };
-    }
-  }, [selectedAudio]);
+  const audioDuration = useAudioDuration(selectedAudio);
 
   const isTooLong =
     audioDuration > videoDuration && videoDuration > 0 && audioDuration > 0;

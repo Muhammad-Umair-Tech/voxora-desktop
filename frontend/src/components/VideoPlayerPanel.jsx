@@ -1,68 +1,68 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Film, Upload, FlaskConical, Trash2 } from "lucide-react";
+import { Film, Upload, FlaskConical, Trash2, Loader2 } from "lucide-react";
 import "../styles/video_player_panel.css";
 import AudioPlacementRange, { formatTimestamp } from "./AudioPlacementRange";
 import sampleVideo from "../assets/sample_video.mp4";
 
-export default function VideoPlayerPanel({ selectedAudio = null }) {
+export default function VideoPlayerPanel({
+  videoSrc = null,
+  fileName = "No video uploaded.",
+  videoDuration = 0,
+  startTime = 0,
+  selectedAudio = null,
+  isGenerating = false,
+  onLoadVideo,
+  onClear,
+  onLoadedMetadata,
+  onStartTimeChange,
+}) {
   const videoRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  const [videoSrc, setVideoSrc] = useState(null);
-  const [fileName, setFileName] = useState("No video uploaded.");
-  const [videoDuration, setVideoDuration] = useState(0);
-  const [startTime, setStartTime] = useState(0);
   const [timestamps, setTimestamps] = useState([]);
   const [activeId, setActiveId] = useState(null);
+  const [isFetchingSample, setIsFetchingSample] = useState(false);
 
-  // Object URLs created via URL.createObjectURL need to be released once
-  // they're replaced or the component unmounts, or the browser leaks memory.
   useEffect(() => {
-    return () => {
-      if (videoSrc && videoSrc.startsWith("blob:")) {
-        URL.revokeObjectURL(videoSrc);
-      }
-    };
+    setTimestamps(videoSrc ? [{ id: "t-0", seconds: 0, label: "0:00" }] : []);
+    setActiveId(videoSrc ? "t-0" : null);
   }, [videoSrc]);
 
-  const loadVideo = (src, name) => {
-    setVideoSrc(src);
-    setFileName(name);
-    setStartTime(0);
-    setTimestamps([{ id: "t-0", seconds: 0, label: "0:00" }]);
-    setActiveId("t-0");
-  };
-
-  const handleClear = () => {
-    if (videoSrc && videoSrc.startsWith("blob:")) {
-      URL.revokeObjectURL(videoSrc);
-    }
-    setVideoSrc(null);
-    setFileName("No video uploaded.");
-    setVideoDuration(0);
-    setStartTime(0);
-    setTimestamps([]);
-    setActiveId(null);
+  const handleClearClick = () => {
+    if (isGenerating) return;
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+    if (onClear) onClear();
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    loadVideo(URL.createObjectURL(file), file.name);
+    if (onLoadVideo) onLoadVideo(file, URL.createObjectURL(file), file.name);
     e.target.value = "";
   };
 
   const handleUploadClick = () => fileInputRef.current?.click();
 
-  const handleLoadSample = () => {
-    loadVideo(sampleVideo, "sample_video.mp4");
+  const handleLoadSample = async () => {
+    setIsFetchingSample(true);
+    try {
+      const res = await fetch(sampleVideo);
+      const blob = await res.blob();
+      const file = new File([blob], "sample_video.mp4", {
+        type: blob.type || "video/mp4",
+      });
+      if (onLoadVideo) onLoadVideo(file, sampleVideo, "sample_video.mp4");
+    } catch (err) {
+      console.error("Failed to load sample video:", err);
+    } finally {
+      setIsFetchingSample(false);
+    }
   };
 
-  const handleLoadedMetadata = (e) => {
-    setVideoDuration(e.target.duration || 0);
+  const handleLoadedMetadataEvent = (e) => {
+    if (onLoadedMetadata) onLoadedMetadata(e.target.duration || 0);
   };
 
   const handleSelectTimestamp = (ts) => {
@@ -107,8 +107,13 @@ export default function VideoPlayerPanel({ selectedAudio = null }) {
             {videoSrc ? (
               <button
                 type="button"
-                onClick={handleClear}
-                className="vx-border vx-hard-shadow-sm vx-press vx-clear-btn flex items-center gap-1.5 px-3 py-1.5 rounded-md vx-mono text-xs font-semibold uppercase tracking-wide"
+                onClick={handleClearClick}
+                disabled={isGenerating}
+                className={`vx-border vx-hard-shadow-sm vx-clear-btn flex items-center gap-1.5 px-3 py-1.5 rounded-md vx-mono text-xs font-semibold uppercase tracking-wide ${
+                  isGenerating
+                    ? "vx-btn-disabled opacity-50 cursor-not-allowed"
+                    : "vx-press"
+                }`}
               >
                 <Trash2 size={13} />
                 Clear
@@ -118,7 +123,12 @@ export default function VideoPlayerPanel({ selectedAudio = null }) {
                 <button
                   type="button"
                   onClick={handleUploadClick}
-                  className="vx-border vx-hard-shadow-sm vx-press vx-video-btn flex items-center gap-1.5 px-3 py-1.5 rounded-md vx-mono text-xs font-semibold uppercase tracking-wide"
+                  disabled={isGenerating}
+                  className={`vx-border vx-hard-shadow-sm vx-video-btn flex items-center gap-1.5 px-3 py-1.5 rounded-md vx-mono text-xs font-semibold uppercase tracking-wide ${
+                    isGenerating
+                      ? "vx-btn-disabled opacity-50 cursor-not-allowed"
+                      : "vx-press"
+                  }`}
                 >
                   <Upload size={13} />
                   Upload
@@ -126,10 +136,15 @@ export default function VideoPlayerPanel({ selectedAudio = null }) {
                 <button
                   type="button"
                   onClick={handleLoadSample}
-                  className="vx-border vx-hard-shadow-sm vx-press vx-video-btn flex items-center gap-1.5 px-3 py-1.5 rounded-md vx-mono text-xs font-semibold uppercase tracking-wide"
+                  disabled={isFetchingSample || isGenerating}
+                  className={`vx-border vx-hard-shadow-sm vx-video-btn flex items-center gap-1.5 px-3 py-1.5 rounded-md vx-mono text-xs font-semibold uppercase tracking-wide ${
+                    isFetchingSample || isGenerating
+                      ? "vx-btn-disabled"
+                      : "vx-press"
+                  }`}
                 >
                   <FlaskConical size={13} />
-                  Load Sample
+                  {isFetchingSample ? "Loading..." : "Load Sample"}
                 </button>
               </>
             )}
@@ -138,14 +153,31 @@ export default function VideoPlayerPanel({ selectedAudio = null }) {
 
         <div className="vx-video-frame vx-border rounded-md overflow-hidden relative aspect-video flex items-center justify-center">
           {videoSrc ? (
-            <video
-              ref={videoRef}
-              src={videoSrc}
-              controls
-              onLoadedMetadata={handleLoadedMetadata}
-              onTimeUpdate={handleTimeUpdate}
-              className="w-full h-full"
-            />
+            <>
+              <video
+                ref={videoRef}
+                src={videoSrc}
+                controls={!isGenerating}
+                onLoadedMetadata={handleLoadedMetadataEvent}
+                onTimeUpdate={handleTimeUpdate}
+                className={`w-full h-full transition-opacity ${
+                  isGenerating
+                    ? "opacity-40 pointer-events-none"
+                    : "opacity-100"
+                }`}
+              />
+              {isGenerating && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/20 backdrop-blur-[1px]">
+                  <Loader2
+                    size={28}
+                    className="vx-spin text-[var(--primary)]"
+                  />
+                  <span className="vx-mono text-xs font-semibold uppercase tracking-wider text-[var(--ink)]">
+                    Processing Video...
+                  </span>
+                </div>
+              )}
+            </>
           ) : (
             <div className="flex flex-col items-center gap-2 px-6 text-center vx-text-soft">
               <Film size={28} />
@@ -170,7 +202,7 @@ export default function VideoPlayerPanel({ selectedAudio = null }) {
         videoDuration={videoDuration}
         selectedAudio={selectedAudio}
         startTime={startTime}
-        onStartTimeChange={setStartTime}
+        onStartTimeChange={onStartTimeChange}
       />
     </>
   );
