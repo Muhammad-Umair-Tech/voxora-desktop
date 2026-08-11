@@ -1,0 +1,65 @@
+#title-bar {
+  position: sticky;
+  top: 0;
+  display: grid;
+  grid-template-columns: 80px 100px auto 45px 160px;
+  border-bottom: 2px solid var(--ink);
+  margin: 0px;
+  align-items: center;
+  padding: 5px;
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: bold;
+}
+
+#nav-bar-middle {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+#nav-bar-middle > button {
+  padding: 10px;
+  margin: 5px;
+}
+
+#title-bar img {
+  height: 50px;
+  width: 50px;
+  margin-left: 20px;
+}
+
+#download-button {
+  padding: 10px;
+  margin: 10px;
+  margin-right: 20px;
+  background-color: var(--primary);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+button {
+  border-radius: 5px;
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0px var(--shadow);
+  background-color: var(--surface);
+  cursor: pointer;
+  font-family: "IBM Plex Mono", monospace;
+  color: var(--ink);
+
+  transition: all 0.1 ease;
+}
+
+button:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0px 0px 0px var(--shadow);
+}
+
+#toggler {
+  width: 45px;
+  height: 45px;
+  border-radius: 100%;
+}
