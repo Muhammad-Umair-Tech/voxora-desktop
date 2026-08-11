@@ -3,6 +3,7 @@ import { useState } from "react";
 import AudioScreen from "../components/AudioScreen";
 import VideoScreen from "../components/VideoScreen";
 import { Sun, Moon, LogOut } from "lucide-react";
+import voxoraIcon from "../assets/voxora_icon2.png";
 
 function Waveform({ bars, className = "" }) {
   return (
@@ -43,12 +44,13 @@ function App() {
       >
         <div className="vx-border vx-hard-shadow vx-card rounded-md p-8 sm:p-10 max-w-md w-full flex flex-col items-center text-center gap-5">
           {/* Muted decorative waveform icon */}
-          <div className="w-12 h-12 rounded-full vx-border flex items-center justify-center bg-[var(--surface-muted)]">
-            <Waveform
-              bars={[6, 12, 18, 10, 14]}
-              className="text-[var(--ink-soft)]"
-            />
-          </div>
+          {/* <div className="w-12 h-12 rounded-full vx-border flex items-center justify-center bg-[var(--surface-muted)]"> */}
+          <img
+            src={voxoraIcon}
+            alt="Voxora Logo"
+            className="w-12 h-12 object-contain"
+          />
+          {/* </div> */}
 
           <div className="flex flex-col gap-1.5">
             <h1 className="vx-display text-2xl sm:text-3xl font-bold tracking-tight">
@@ -76,9 +78,10 @@ function App() {
       <nav className="vx-nav">
         <div className="vx-nav-inner">
           <div className="flex items-center gap-2.5">
-            <Waveform
-              bars={[7, 13, 18, 10, 15]}
-              className="text-[var(--primary)]"
+            <img
+              src={voxoraIcon}
+              alt="Voxora Logo"
+              className="w-9 h-9 object-contain"
             />
             <span className="vx-display text-lg font-bold uppercase tracking-tight">
               Voxora
