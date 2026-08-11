@@ -1,17 +1,18 @@
 ---
 inclusion: always
 ---
+
 <!------------------------------------------------------------------------------------
    Add rules to this file or a short description and have Kiro refine them for you.
    
    Learn about inclusion modes: https://kiro.dev/docs/steering/#inclusion-modes
--------------------------------------------------------------------------------------> 
+------------------------------------------------------------------------------------->
 
 # VOXORA_SPEC.md
 
 ## 1. Voxora Introduction
 
-- Voxora is an AI-native audio generation and video transcription application.
+- Voxora is an AI-native audio generation and video speech-integration application.
 - The application accepts `.txt` file uploads, or allows the user to type text, to generate local, multi-track speech audio using three to five predefined local Piper TTS voices.
 - Users can embed the newly generated audio into a chosen video at a specific timestamp.
 - The system allows the user to either overlay the new audio on top of the original track or strip the original audio entirely to replace it.
@@ -70,4 +71,3 @@ inclusion: always
   - Write the Inno Setup compiler script to create the desktop shortcut and final installer.
   - Create a release on the GitHub monorepo and upload the final installer asset.
   - Design, build, and deploy the simple static landing page to Vercel, linking the download button to the GitHub artifact.
-
