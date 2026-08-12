@@ -22,8 +22,8 @@ export default function App() {
       <TitleBar theme={theme} onThemeChange={setTheme} />
       <BannerSection />
       <AudioSection />
-      <VideoSection />
       <Models />
+      <VideoSection />
       <Footer />
     </>
   );

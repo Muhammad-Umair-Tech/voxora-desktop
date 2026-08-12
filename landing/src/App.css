@@ -2,6 +2,15 @@ html,
 body {
   padding: 0px;
   margin: 0px;
+  scroll-behavior: smooth;
+}
+
+/* Offset sections so they don't get covered by the sticky title bar */
+#banner-section,
+#audio-section,
+#models-section,
+#video-section {
+  scroll-margin-top: 70px;
 }
 
 :root {

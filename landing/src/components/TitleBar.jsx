@@ -7,17 +7,43 @@ export default function TitleBar({ theme, onThemeChange }) {
     onThemeChange(theme === "light" ? "dark" : "light");
   };
 
+  const scrollToSection = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behaviour: "smooth" });
+    }
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behaviour: "smooth" });
+  };
+
   return (
     <header id="title-bar">
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+      <div id="app-logo" onClick={() => scrollToTop()}>
         <img src={voxoraIcon} alt="Voxora Icon" />
         <div id="app-title">VOXORA</div>
       </div>
 
       <nav id="nav-bar-middle">
-        <button className="nav-button vx-button">Audio</button>
-        <button className="nav-button vx-button">Models</button>
-        <button className="nav-button vx-button">Video</button>
+        <button
+          className="nav-button vx-button"
+          onClick={() => scrollToSection("audio-section")}
+        >
+          Audio
+        </button>
+        <button
+          className="nav-button vx-button"
+          onClick={() => scrollToSection("models-section")}
+        >
+          Models
+        </button>
+        <button
+          className="nav-button vx-button"
+          onClick={() => scrollToSection("video-section")}
+        >
+          Video
+        </button>
       </nav>
 
       <div className="title-bar-actions">

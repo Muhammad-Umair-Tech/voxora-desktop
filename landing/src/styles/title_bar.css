@@ -18,6 +18,13 @@
   width: 40px;
 }
 
+#app-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
 #app-title {
   font-family: "Space Grotesk", sans-serif;
   font-weight: 700;
