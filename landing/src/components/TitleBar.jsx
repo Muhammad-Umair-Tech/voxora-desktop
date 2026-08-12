@@ -2,7 +2,7 @@ import voxoraIcon from "../assets/voxora_icon2.png";
 import "../styles/title_bar.css";
 import { Download, Sun, Moon } from "lucide-react";
 
-export default function TitleBar({ theme, onThemeChange }) {
+export default function TitleBar({ theme, onThemeChange, onDownloadClicked }) {
   const handleTogglerOnClick = () => {
     onThemeChange(theme === "light" ? "dark" : "light");
   };
@@ -55,10 +55,15 @@ export default function TitleBar({ theme, onThemeChange }) {
         >
           {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
         </button>
-        <button id="download-button" className="vx-button">
+        <a
+          id="download-button"
+          className="vx-button"
+          href="https://github.com/Muhammad-Umair-Tech/voxora-desktop/releases/latest/download/Voxora-Windows.zip"
+          onClick={() => onDownloadClicked(true)}
+        >
           <Download size={18} style={{ marginRight: "6px" }} />
           <span>Download</span>
-        </button>
+        </a>
       </div>
     </header>
   );

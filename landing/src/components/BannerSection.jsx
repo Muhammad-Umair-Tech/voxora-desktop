@@ -12,7 +12,7 @@ const WAVEFORM = [
 // Where along the waveform the "insert" pin sits (percentage across).
 const PIN_POSITION = 63;
 
-export default function BannerSection() {
+export default function BannerSection({ onDownloadClicked }) {
   return (
     <section id="banner-section">
       <div id="banner-content">
@@ -33,10 +33,14 @@ export default function BannerSection() {
           </p>
 
           <div id="banner-cta">
-            <button className="cta-primary vx-button">
+            <a
+              className="cta-primary vx-button"
+              href="https://github.com/Muhammad-Umair-Tech/voxora-desktop/releases/latest/download/Voxora-Windows.zip"
+              onClick={() => onDownloadClicked(true)}
+            >
               <Download size={18} />
               Download for Windows
-            </button>
+            </a>
             <a
               className="cta-secondary vx-button"
               href="https://github.com/Muhammad-Umair-Tech/voxora-desktop"
