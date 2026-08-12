@@ -2,6 +2,7 @@
 
 import os
 import sys
+from pathlib import Path
 
 block_cipher = None
 
@@ -14,13 +15,36 @@ datas = [
     ('frontend/dist', 'frontend/dist'),
     # Piper TTS voice models
     ('models', 'models'),
+    ('tools/piper', 'tools/piper')
+    # NOTE: the `landing/` folder is intentionally excluded — it contains only
+    # the Vercel distribution site and has no role in the desktop executable.
 ]
 
-# Bundle ffmpeg.exe if it exists alongside the spec (i.e. tools/ffmpeg.exe or root)
-for ffmpeg_candidate in ['ffmpeg.exe', 'tools/ffmpeg.exe']:
-    if os.path.exists(ffmpeg_candidate):
-        datas.append((ffmpeg_candidate, '.'))
-        break
+# Bundle ffmpeg directory structure
+# video_service.py looks for tools/ffmpeg/ffmpeg.exe at freeze time
+if os.path.exists('tools/ffmpeg'):
+    datas.append(('tools/ffmpeg', 'tools/ffmpeg'))
+
+# ---------------------------------------------------------------------------
+# Bundle package metadata (.dist-info) for packages that call
+# importlib.metadata.version() at import time
+# ---------------------------------------------------------------------------
+site_packages = Path('env/Lib/site-packages')
+if site_packages.exists():
+    metadata_packages = [
+        'imageio-2.37.4.dist-info',
+        'imageio_ffmpeg-0.6.0.dist-info',
+        'moviepy-2.2.1.dist-info',
+        'proglog-0.1.12.dist-info',
+        'decorator-5.3.1.dist-info',
+        'numpy-2.5.1.dist-info',
+        'pillow-11.3.0.dist-info',
+        'tqdm-4.70.0.dist-info',
+    ]
+    for pkg in metadata_packages:
+        pkg_path = site_packages / pkg
+        if pkg_path.exists():
+            datas.append((str(pkg_path), pkg))
 
 # ---------------------------------------------------------------------------
 # 2. Hidden imports
@@ -159,7 +183,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='assets/voxora.ico' if os.path.exists('assets/voxora.ico') else None,
+    icon='assets/voxora_icon2.ico' if os.path.exists('assets/voxora_icon2.ico') else None,
 )
 
 # COLLECT creates dist/Voxora/ with Voxora.exe + _internal/
