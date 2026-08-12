@@ -95,7 +95,6 @@
 }
 
 #video-container {
-  aspect-ratio: 16 / 9.5;
   width: 100%;
   background: var(--surface-muted);
   display: flex;

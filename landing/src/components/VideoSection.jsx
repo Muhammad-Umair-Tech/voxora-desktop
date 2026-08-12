@@ -1,6 +1,7 @@
 import "../styles/video_section.css";
 import { useEffect, useRef, useState } from "react";
 import { Play, Clock3, Layers, DownloadCloud } from "lucide-react";
+import videoDemo from "../assets/voxora_video.mp4";
 
 // Once you have a screen recording, wire it up the same way AudioSection
 // wires up its clip:
@@ -115,7 +116,7 @@ export default function VideoSection() {
             </div>
           </div>
 
-          <div id="video-stage" onClick={handleStageClick}>
+          {/* <div id="video-stage" onClick={handleStageClick}>
             <div id="video-stage-grid" />
 
             <button
@@ -139,7 +140,8 @@ export default function VideoSection() {
                 style={{ left: r.x, top: r.y }}
               />
             ))}
-          </div>
+          </div> */}
+          <video autoPlay muted loop playsInline src={videoDemo} />
         </div>
 
         {/* Interactive overlay / replace demo */}

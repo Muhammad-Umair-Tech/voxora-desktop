@@ -1,5 +1,5 @@
 import "../styles/footer.css";
-import { Mail, Heart } from "lucide-react";
+import { Mail } from "lucide-react";
 import GitHubIcon from "./GitHubIcon";
 
 export default function Footer() {
@@ -17,7 +17,7 @@ export default function Footer() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <Mail size={16} />
+            <Mail size={15} />
             <span>m.umair8890@gmail.com</span>
           </a>
 
@@ -27,14 +27,14 @@ export default function Footer() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <GitHubIcon />
+            <GitHubIcon size={15} />
             <span>GitHub</span>
           </a>
         </div>
       </div>
 
       <div id="footer-bottom">
-        <span>2026 Voxora.</span>
+        <span>© 2026 Voxora.</span>
       </div>
     </footer>
   );
