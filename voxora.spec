@@ -15,7 +15,8 @@ datas = [
     ('frontend/dist', 'frontend/dist'),
     # Piper TTS voice models
     ('models', 'models'),
-    ('tools/piper', 'tools/piper')
+    ('tools/piper', 'tools/piper'),
+    ('LICENSE.md', '.')
     # NOTE: the `landing/` folder is intentionally excluded — it contains only
     # the Vercel distribution site and has no role in the desktop executable.
 ]

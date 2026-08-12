@@ -276,3 +276,296 @@ Key configuration points:
 - All working files are written to `%TEMP%\voxora\{session_id}\`.
 - On `/api/shutdown`, the app recursively deletes the session temp directory.
 - A startup cleanup pass deletes any leftover `%TEMP%\voxora\` directories older than 24 hours.
+
+---
+
+## AFTER UI REQUIREMENTS UPDATE
+
+> The following sections document the design as actually implemented. They replace or extend the original design sections above where differences exist.
+
+### Updated Project Structure
+
+```
+voxora-desktop/
+├── backend/
+│   ├── main.py                   # FastAPI app, startup, static mounts, temp cleanup
+│   ├── __init__.py
+│   ├── routers/
+│   │   ├── audio.py              # POST /api/generate-audio, GET /api/audio-library
+│   │   ├── video.py              # POST /api/upload-video, POST /api/process-video
+│   │   ├── system.py             # GET /api/shutdown
+│   │   └── __init__.py
+│   ├── services/
+│   │   ├── tts_service.py        # Piper subprocess wrapper
+│   │   ├── video_service.py      # moviepy/ffmpeg processing logic
+│   │   ├── tempfile_service.py   # Startup cleanup of stale temp files
+│   │   └── __init__.py
+│   ├── models/
+│   │   ├── schemas.py            # All Pydantic request/response models
+│   │   └── __init__.py
+│   └── utils/
+│       ├── port_finder.py        # Dynamic port detection
+│       └── __init__.py
+├── frontend/
+│   ├── src/
+│   │   ├── pages/
+│   │   │   └── App.jsx           # Root layout: navbar, tab switching, theme, quit
+│   │   ├── components/
+│   │   │   ├── AudioScreen.jsx        # Full audio generation screen
+│   │   │   ├── AudioResultPanel.jsx   # Wavesurfer waveform + play/save controls
+│   │   │   ├── VideoScreen.jsx        # Full video integration screen (state owner)
+│   │   │   ├── VideoPlayerPanel.jsx   # Video preview, upload/sample/clear buttons
+│   │   │   ├── AudioPlacementRange.jsx # Custom drag timeline window
+│   │   │   ├── AudioLibraryPanel.jsx  # Generated audio list with playback
+│   │   │   ├── OverlayReplaceToggle.jsx # Segmented Overlay/Replace control
+│   │   │   ├── AddAudioButton.jsx     # Main action button + error display
+│   │   │   └── VideoResultPanel.jsx   # Output video player + download button
+│   │   ├── hooks/
+│   │   │   └── useAudioDuration.js    # Shared audio duration probe hook
+│   │   ├── styles/
+│   │   │   ├── audio_screen.css
+│   │   │   ├── audio_result_panel.css
+│   │   │   ├── audio_library_panel.css
+│   │   │   ├── add_audio_button.css
+│   │   │   ├── video_screen.css
+│   │   │   ├── video_player_panel.css
+│   │   │   ├── video_result_panel.css
+│   │   │   ├── overlay_replace_toggle.css
+│   │   │   └── timestamp_markers.css
+│   │   ├── assets/               # Voice preview .wav files, sample_video.mp4, icons
+│   │   ├── App.css               # Global CSS custom properties / theme tokens
+│   │   ├── index.css
+│   │   └── main.jsx
+│   ├── index.html
+│   ├── vite.config.js
+│   └── tailwind.config.js
+├── models/                       # en_GB-alan-medium, en_GB-semaine-medium,
+│   ├── *.onnx                    # en_US-bryce-medium, en_US-kathleen-low
+│   ├── *.onnx.json
+│   └── VOICES.md
+├── tools/
+│   ├── piper/piper.exe           # Bundled Piper TTS binary
+│   ├── ffmpeg/ffmpeg.exe         # Bundled ffmpeg binary
+│   └── README.md
+├── assets/
+│   ├── voxora_icon2.ico          # Windows app icon
+│   └── voxora_icon2.png          # (referenced by React UI)
+├── landing/                      # Separate React + Vite app — deployed to Vercel
+│   ├── src/
+│   ├── public/
+│   ├── index.html
+│   ├── vite.config.js
+│   └── package.json
+├── scripts/
+│   └── test_piper.py             # Manual Piper validation script
+├── env/                          # Python virtualenv (not committed)
+├── voxora.spec                   # PyInstaller spec
+├── requirements.txt
+├── LICENSE.md
+└── .gitignore
+```
+
+---
+
+### Updated API Endpoints
+
+#### `POST /api/generate-audio`
+*(unchanged from original design)*
+
+#### `GET /api/audio-library`
+- **Logic:** Scans `%TEMP%\voxora\audio\` for all `.wav` files, returns them sorted newest-first.
+- **Response:** `list[AudioLibraryItem]` — each item has `name`, `audio_url` (relative `/files/audio/<name>`), `audio_path` (absolute disk path), `modified_at` (epoch float).
+- **Purpose:** Populates the Video screen's Audio Library panel so users can pick a previously generated track to embed in a video.
+
+#### `POST /api/upload-video`
+- **Request:** multipart `UploadFile`.
+- **Validation:** Extension must be in `{.mp4, .mkv, .mov, .avi}`.
+- **Logic:** Streams file to disk in 1 MB chunks to avoid memory issues with large uploads. Reads duration via `moviepy.VideoFileClip` inside a context manager.
+- **Response:** `{ video_id: str, duration_seconds: float }`
+
+#### `POST /api/process-video`
+- **Request body:** `{ video_id, audio_path, start_time, replace_audio }`
+- **Note:** `audio_path` is the **absolute local disk path** to the `.wav` file (not a URL). The frontend sources this from `item.audio_path` returned by `/api/audio-library`.
+- **Logic:** Resolves video file by globbing `%TEMP%\voxora\video\<video_id>.*`. Validates audio path exists on disk. Delegates to `video_service.process()`.
+- **Response:** `{ output_url: str }` — relative path like `/files/output/<uuid>.mp4`.
+
+#### `GET /api/shutdown`
+*(unchanged from original design)*
+
+---
+
+### Updated Pydantic Schemas
+
+```python
+class GenerateAudioRequest(BaseModel):
+    text: str = Field(..., min_length=1)
+    voice_id: str = Field(..., min_length=1)
+
+class GenerateAudioResponse(BaseModel):
+    audio_url: str        # e.g. /files/audio/tts_<uuid>.wav
+    duration: float       # seconds, gt=0
+
+class UploadVideoResponse(BaseModel):
+    video_id: str         # uuid hex
+    duration_seconds: float
+
+class ProcessVideoRequest(BaseModel):
+    video_id: str
+    audio_path: str       # absolute disk path
+    start_time: float     # ge=0
+    replace_audio: bool = True
+
+class ProcessVideoResponse(BaseModel):
+    output_url: str       # e.g. /files/output/<uuid>.mp4
+
+class AudioLibraryItem(BaseModel):
+    name: str
+    audio_url: str        # relative URL for playback
+    audio_path: str       # absolute disk path for processing
+    modified_at: float    # epoch, for sort order
+```
+
+---
+
+### Updated Frontend Design
+
+#### Screen Architecture
+
+The app uses a **two-screen tabbed layout** inside a persistent navbar, rather than a two-column single page.
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  [Voxora icon] Voxora   [Audio | Video]   [🌙] [Quit]       │  ← Navbar
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  AUDIO SCREEN  (tab: "audio")        or                     │
+│  VIDEO SCREEN  (tab: "video")                               │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### Audio Screen Layout
+
+Single-column, max-width 3xl, centred:
+
+```
+┌─────────────────────────────────────┐
+│  Generate Speech                    │
+│  Write or import a script...        │
+│                                     │
+│  ┌─ Card ────────────────────────┐  │
+│  │  Script                chars  │  │
+│  │  [textarea]                   │  │
+│  │  ─────────────────────────────│  │
+│  │  [drop zone] [Import] [Clear] │  │
+│  │  ─────────────────────────────│  │
+│  │  Voice                        │  │
+│  │  [Alan] [Sam] [Bryce][Kathleen]│  │
+│  │  ─────────────────────────────│  │
+│  │  [Generate audio ▶]           │  │
+│  │  [loader bar animation]       │  │
+│  │  [AudioResultPanel]           │  │
+│  └───────────────────────────────┘  │
+└─────────────────────────────────────┘
+```
+
+#### Video Screen Layout
+
+Two-column grid (lg:col-span-7 / lg:col-span-5), stacks on mobile:
+
+```
+┌────────────────────────┬────────────────────────┐
+│  LEFT (7/12)           │  RIGHT (5/12)           │
+│                        │                         │
+│  [VideoPlayerPanel]    │  [AudioLibraryPanel]    │
+│    - video preview     │    - scrollable list    │
+│    - Upload/Sample/    │    - play/select items  │
+│      Clear buttons     │    - refresh button     │
+│                        │                         │
+│  [AudioPlacementRange] │  [OverlayReplaceToggle] │
+│    - drag window       │    - Overlay / Replace  │
+│    - offset label      │                         │
+│    - error if too long │  [AddAudioButton]       │
+│                        │    - "Add" / loading    │
+│  [VideoResultPanel]    │    - error display      │
+│    (appears after      │                         │
+│     processing)        │                         │
+└────────────────────────┴────────────────────────┘
+```
+
+#### Component State Ownership
+
+`VideoScreen.jsx` owns all video-screen state and passes it down as props:
+
+```
+VideoScreen (state owner)
+├── videoFile, videoId, videoSrc, fileName
+├── videoDuration, startTime
+├── selectedAudio (AudioLibraryItem | null)
+├── mode: "overlay" | "replace"
+├── isGenerating: boolean
+└── videoResult: { videoUrl } | null
+
+Props flow:
+  VideoPlayerPanel  ← videoSrc, fileName, videoDuration, startTime,
+                      selectedAudio, isGenerating,
+                      onLoadVideo, onClear, onLoadedMetadata, onStartTimeChange
+  AudioLibraryPanel ← onSelect
+  OverlayReplaceToggle ← mode, onChange
+  AddAudioButton    ← videoId, videoDuration, startTime, selectedAudio,
+                      mode, onStartGenerating, onResult
+  VideoResultPanel  ← videoUrl, fileName
+```
+
+`AudioScreen.jsx` is self-contained and owns all its own state internally.
+
+#### `useAudioDuration` Hook
+
+Shared by `AudioPlacementRange` and `AddAudioButton`. Reads `selectedAudio.duration` if present, otherwise probes the URL with a temporary `<audio>` element's `loadedmetadata` event. Returns `0` when no audio is selected.
+
+---
+
+### Updated Tools & Binary Paths
+
+Both binaries are resolved via `sys._MEIPASS` when frozen or relative to the project root in dev mode:
+
+| Binary | Frozen path | Dev path |
+|---|---|---|
+| `piper.exe` | `sys._MEIPASS / tools / piper / piper.exe` | `project_root / tools / piper / piper.exe` |
+| `ffmpeg.exe` | `sys._MEIPASS / tools / ffmpeg / ffmpeg.exe` | `project_root / tools / ffmpeg / ffmpeg.exe` |
+
+The ffmpeg path is set via `os.environ["IMAGEIO_FFMPEG_EXE"]` and `moviepy.config.FFMPEG_BINARY` (legacy fallback) in `video_service.configure_ffmpeg()`, which is called at module import time.
+
+---
+
+### Updated PyInstaller Spec Configuration
+
+Key `datas` entries as actually configured:
+
+```python
+datas = [
+    ('frontend/dist',  'frontend/dist'),  # React build
+    ('models',         'models'),         # Piper .onnx models
+    ('tools/ffmpeg',   'tools/ffmpeg'),   # ffmpeg binary (full dir structure)
+    # Piper binary is bundled separately — resolved from tools/piper/ at runtime
+    # dist-info metadata dirs for imageio, moviepy, proglog, decorator,
+    # numpy, pillow, tqdm, imageio_ffmpeg (required by importlib.metadata.version())
+]
+```
+
+`pathex` includes both `.` and `backend/` so PyInstaller can resolve `utils`, `routers`, `services`, and `models` as top-level packages during analysis.
+
+---
+
+### Updated Landing Page Design
+
+The landing page is a **React + Vite application** (not plain HTML) located in `landing/`. It uses `lucide-react` for icons and is deployed independently to Vercel. It is kept entirely separate from the desktop app bundle (`landing/` is explicitly excluded from the PyInstaller `datas`).
+
+---
+
+### Updated Temp File Management
+
+- `tempfile_service.cleanup_old_temp_files(max_age_hours=24)` is called from `backend/main.py` at startup.
+- It iterates entries in `%TEMP%\voxora\` and removes anything with an `mtime` older than the cutoff.
+- Individual errors (locked files, permissions) are caught and printed but do not abort startup.
+- The session subdirectory structure is: `%TEMP%\voxora\audio\`, `%TEMP%\voxora\video\`, `%TEMP%\voxora\output\`.

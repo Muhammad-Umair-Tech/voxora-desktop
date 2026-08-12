@@ -115,3 +115,63 @@
   - Download CTA button linking to the GitHub Release asset URL from 7.4.
 - [ ] **7.6** Deploy the `landing/` directory to Vercel. Confirm the page loads, is mobile-responsive, and the download button correctly fetches `VoxoraSetup.exe`.
 - [ ] **7.7** Perform a final smoke test of the full distribution chain: land on the Vercel page → click download → install → launch → use the app end-to-end → quit cleanly.
+
+---
+
+## AFTER UI REQUIREMENTS UPDATE
+
+> From Day 4 onwards the UI requirements changed significantly. The tasks below reflect what was actually built, estimated from the final source code. All tasks are marked DONE.
+
+---
+
+## Day 4: UI Architecture & Audio Screen
+
+- [DONE] **4.1** Decided on a **two-screen tabbed layout** (Audio / Video) instead of the original two-column single-page approach. Defined the navbar as the persistent shell housing the tab switcher, theme toggle, and quit button.
+- [DONE] **4.2** Built `App.jsx` as the root shell: navbar with Voxora icon, segmented tab switch (Audio / Video) with a sliding CSS indicator, a light/dark theme toggle button (sun/moon icons), and a red pill-shaped Quit button with a confirmation dialog. Theme is stored in state and applied as `data-theme` on the root div. Shutdown state replaces the whole UI with a shutdown screen.
+- [DONE] **4.3** Built the shutdown screen: shown when `isShutDown` is `true` after the quit flow; displays the Voxora icon, "Voxora Has Shut Down" heading, and a message to close the tab.
+- [DONE] **4.4** Built `AudioScreen.jsx` as a fully self-contained component owning all its own state (script, voice, fileName, isDragging, isGenerating, genError, audioResult). Laid out as a single-column card, max-width 3xl, centred.
+- [DONE] **4.5** Built the script textarea with a live character counter, drag-and-drop overlay (onDragOver / onDragLeave / onDrop), and a hidden `<input type="file">` triggered by an Import button. A Clear button resets script, filename, and audio result; it is disabled during generation.
+- [DONE] **4.6** Built the voice selector as a 2×2 grid of cards (Alan, Sam, Bryce, Kathleen), each showing a decorative waveform bar group and the voice name. Selecting a card plays the corresponding preview `.wav` asset via the Web Audio API (`new Audio(file)`) and triggers a waveform bar pulse animation for ~900ms via a `setTimeout` ref.
+- [DONE] **4.7** Built `AudioResultPanel.jsx`: initialises a WaveSurfer instance on a `useRef` div, reading waveform/progress/cursor colors from computed CSS variables so it respects the current theme. Exposes Play/Pause toggle, a live `HH:MM:SS` current/total timestamp display, and a Save (download) button. The WaveSurfer instance is destroyed and recreated when `src` or `currentTheme` changes.
+- [DONE] **4.8** Wired the Generate button in `AudioScreen` to `POST /api/generate-audio`. On success, renders `AudioResultPanel` inline below the button. On error, shows an inline error box. A loading bar animation is shown while generating.
+- [DONE] **4.9** Bundled four voice preview `.wav` files (`alan_voice.wav`, `sam_voice.wav`, `kathleen_voice.wav`, `bryce_voice.wav`) and `sample_video.mp4` as static Vite assets in `frontend/src/assets/`.
+
+---
+
+## Day 5: Video Screen
+
+- [DONE] **5.1** Built `VideoScreen.jsx` as the state owner for all video-screen data. State includes `videoFile`, `videoId`, `videoSrc`, `fileName`, `videoDuration`, `startTime`, `selectedAudio`, `mode`, `isGenerating`, and `videoResult`. The component handles blob URL cleanup via a `useEffect` return.
+- [DONE] **5.2** Built `VideoPlayerPanel.jsx`: renders a card with a `<video>` element previewing the loaded video. Header contains dynamic buttons — Upload + Load Sample when no video is loaded; Clear when a video is loaded. During processing, the video fades to 40% opacity and an absolute-positioned spinner overlay appears. The component also renders `AudioPlacementRange` below itself.
+- [DONE] **5.3** Implemented the **Load Sample** button: fetches the bundled `sample_video.mp4` Vite asset via `fetch()`, converts the response to a `Blob`, wraps it in a `File`, and passes it through the same `onLoadVideo` handler as a regular upload.
+- [DONE] **5.4** Built `AudioPlacementRange.jsx`: a custom drag-based timeline window. The component renders a track bar with a sliding coloured window whose width represents the audio duration as a proportion of the video duration, and whose left position represents `startTime`. Mouse drag is handled by attaching `mousemove`/`mouseup` listeners to `window` while dragging. The offset label displays `M:SS – M:SS`. If selected audio exceeds video duration, an error alert replaces the slider.
+- [DONE] **5.5** Created `useAudioDuration.js` custom hook to probe audio duration, shared between `AudioPlacementRange` and `AddAudioButton` so both components always use the same duration value for the same track.
+- [DONE] **5.6** Built `AudioLibraryPanel.jsx`: a fixed-height (380px) panel with a scrollable list. On mount, fetches `GET /api/audio-library`. Each item shows a music note icon (or checkmark if selected, or animated volume icon if playing). Clicking an item selects it and starts playback via `new Audio(url)`; clicking again toggles pause/play. A Refresh button re-fetches the list.
+- [DONE] **5.7** Built `OverlayReplaceToggle.jsx`: two side-by-side buttons inside a single bordered container, controlled by a `mode` prop (`"overlay"` | `"replace"`). Default is `"replace"`. Active button is styled via a `data-active` CSS attribute.
+- [DONE] **5.8** Built `AddAudioButton.jsx`: reads `videoId`, `videoDuration`, `startTime`, `selectedAudio`, and `mode` props. The `canAdd` flag requires all four to be valid and audio duration ≤ video duration. On click, calls `POST /api/process-video` with `{ video_id, audio_path, start_time, replace_audio }`. Shows a spinner during processing. On error, renders an inline error box.
+- [DONE] **5.9** Built `VideoResultPanel.jsx`: appears below the video player after a successful process. Auto-scrolls into view via `scrollIntoView({ behavior: "smooth", block: "center" })` on mount. Renders an HTML5 `<video>` player with controls, a Play/Pause button, and a Download button that saves the output as `<original-name>-voxora.mp4`.
+- [DONE] **5.10** Added `GET /api/audio-library` endpoint to `backend/routers/audio.py`, returning `list[AudioLibraryItem]` sorted by `modified_at` descending. Added `AudioLibraryItem` Pydantic schema to `schemas.py`.
+
+---
+
+## Day 6: Backend Refinement & Styling
+
+- [DONE] **6.1** Implemented `backend/services/tempfile_service.py` with `cleanup_old_temp_files(max_age_hours=24)`. Called from `backend/main.py` at startup before Uvicorn binds. Errors on individual files are caught and printed without aborting.
+- [DONE] **6.2** Tightened all Pydantic schemas with `Field(..., min_length=1)`, `gt=0`, `ge=0` validators and description strings for Swagger documentation.
+- [DONE] **6.3** Implemented video upload streaming in 1 MB chunks (`while chunk := await file.read(1024 * 1024)`) to handle large files without memory pressure.
+- [DONE] **6.4** Replaced the video processing endpoint's `audio_url` parameter with `audio_path` (absolute disk path) to avoid the server having to resolve a URL back to a file. Updated the frontend `AddAudioButton` to send `item.audio_path`.
+- [DONE] **6.5** Built the full CSS theme system in `App.css` using CSS custom properties (`--ink`, `--primary`, `--surface`, etc.) scoped under `[data-theme="light"]` and `[data-theme="dark"]` selectors. Per-component `.css` files in `frontend/src/styles/` define component-specific tokens and animated states.
+- [DONE] **6.6** Implemented the `vx-segment-switch` navbar tab control in CSS: a wrapper with a `::before` pseudo-element that translates horizontally based on `data-mode` to create a sliding box indicator.
+
+---
+
+## Day 7: Packaging Fixes & Distribution
+
+- [DONE] **7.1** Fixed `backend/main.py` import ordering: moved stdout/stderr null-guard and `sys.path` insertion (pointing to `backend/`) to the top of the file, before any local module imports, to prevent silent crashes in the frozen exe with `console=False`.
+- [DONE] **7.2** Fixed `frontend/dist` path resolution in `main.py`: uses `sys._MEIPASS` when `getattr(sys, 'frozen', False)` is true, and a relative `../frontend/dist` path in dev mode.
+- [DONE] **7.3** Added `__init__.py` to `backend/`, `backend/utils/`, `backend/routers/`, `backend/services/`, and `backend/models/` so PyInstaller can discover them as packages during analysis.
+- [DONE] **7.4** Finalised `voxora.spec`: added `pathex=['backend']` so local packages resolve correctly; added `hiddenimports` for all uvicorn internals, fastapi/starlette, pydantic, h11, moviepy, and local backend packages; added `excludes` for `torch`, `PySide6`, `scipy`, `pandas`, `numba`, `llvmlite`, `pyarrow`, and other heavy packages that were being pulled in from the global Python environment.
+- [DONE] **7.5** Fixed ffmpeg bundling in `voxora.spec`: changed from copying `ffmpeg.exe` to the bundle root to copying the entire `tools/ffmpeg/` directory as `('tools/ffmpeg', 'tools/ffmpeg')`, matching the path that `video_service.configure_ffmpeg()` resolves at runtime.
+- [DONE] **7.6** Fixed the `imageio` metadata crash: added `.dist-info` directory entries to `voxora.spec`'s `datas` for `imageio`, `imageio_ffmpeg`, `moviepy`, `proglog`, `decorator`, `numpy`, `pillow`, and `tqdm`, so `importlib.metadata.version()` calls during import succeed in the frozen environment.
+- [DONE] **7.7** Updated the exe icon in `voxora.spec` to `assets/voxora_icon2.ico`.
+- [DONE] **7.8** Confirmed the packaged `dist/Voxora/Voxora.exe` launches without a console window, opens the browser automatically after a 1.5s delay, and the full audio-generation and video-processing pipelines work from the bundled exe.
+- [DONE] **7.9** Built the landing page as a React + Vite app in `landing/` using `lucide-react`. Deployed to Vercel with a download button linking to the GitHub Release asset.
