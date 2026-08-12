@@ -1,65 +1,116 @@
 #title-bar {
   position: sticky;
   top: 0;
-  display: grid;
-  grid-template-columns: 80px 100px auto 45px 160px;
-  border-bottom: 2px solid var(--ink);
-  margin: 0px;
-  align-items: center;
-  padding: 5px;
-  font-family: "Space Grotesk", sans-serif;
-  font-weight: bold;
-}
-
-#nav-bar-middle {
   display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-}
-
-#nav-bar-middle > button {
-  padding: 10px;
-  margin: 5px;
+  padding: 10px 16px;
+  border-bottom: 2px solid var(--ink);
+  background-color: var(--surface);
+  z-index: 100;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 #title-bar img {
-  height: 50px;
-  width: 50px;
-  margin-left: 20px;
+  height: 40px;
+  width: 40px;
 }
 
-#download-button {
-  padding: 10px;
-  margin: 10px;
-  margin-right: 20px;
-  background-color: var(--primary);
+#app-title {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+/* Prevent middle navigation buttons from wrapping/stacking */
+#nav-bar-middle {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-wrap: nowrap; /* Prevents stacking */
   align-items: center;
+  gap: 8px;
 }
 
-button {
-  border-radius: 5px;
-  border: 2px solid var(--ink);
-  box-shadow: 3px 3px 0px var(--shadow);
+.nav-button {
+  padding: 8px 12px;
+  font-size: 13px;
+  white-space: nowrap; /* Prevents text inside buttons from wrapping */
   background-color: var(--surface);
-  cursor: pointer;
-  font-family: "IBM Plex Mono", monospace;
   color: var(--ink);
-
-  transition: all 0.1 ease;
 }
 
-button:active {
-  transform: translate(3px, 3px);
-  box-shadow: 0px 0px 0px var(--shadow);
+/* Actions group for toggler & download button */
+.title-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 #toggler {
-  width: 45px;
-  height: 45px;
+  width: 40px;
+  height: 40px;
   border-radius: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0;
+  background-color: var(--surface);
+  color: var(--ink);
+}
+
+#download-button {
+  padding: 8px 14px;
+  background-color: var(--primary);
+  color: var(--primary-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* ---------- Mobile Responsive Breakpoints ---------- */
+
+@media (max-width: 768px) {
+  #title-bar {
+    padding: 8px 12px;
+  }
+
+  /* Make middle buttons slightly more compact instead of hiding them */
+  #nav-bar-middle {
+    gap: 4px;
+  }
+
+  .nav-button {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 520px) {
+  #app-title {
+    display: none; /* Hide app title on very narrow screens to free up space */
+  }
+
+  #download-button span {
+    display: none; /* Collapse Download button to icon-only */
+  }
+
+  #download-button {
+    padding: 8px;
+  }
+
+  #download-button svg {
+    margin-right: 0 !important;
+  }
+}
+
+@media (max-width: 380px) {
+  /* Scale down middle buttons further for ultra-small screens */
+  .nav-button {
+    padding: 5px 6px;
+    font-size: 11px;
+  }
 }

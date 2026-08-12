@@ -1,4 +1,9 @@
 import TitleBar from "./components/TitleBar";
+import BannerSection from "./components/BannerSection.jsx";
+import AudioSection from "./components/AudioSection.jsx";
+import VideoSection from "./components/VideoSection.jsx";
+import Models from "./components/Models.jsx";
+import Footer from "./components/Footer.jsx";
 import "./App.css";
 import { useState, useEffect } from "react";
 
@@ -15,6 +20,11 @@ export default function App() {
   return (
     <>
       <TitleBar theme={theme} onThemeChange={setTheme} />
+      <BannerSection />
+      <AudioSection />
+      <VideoSection />
+      <Models />
+      <Footer />
     </>
   );
 }

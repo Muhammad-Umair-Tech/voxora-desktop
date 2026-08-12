@@ -4,31 +4,36 @@ import { Download, Sun, Moon } from "lucide-react";
 
 export default function TitleBar({ theme, onThemeChange }) {
   const handleTogglerOnClick = () => {
-    if (theme === "light") {
-      onThemeChange("dark");
-    } else {
-      onThemeChange("light");
-    }
+    onThemeChange(theme === "light" ? "dark" : "light");
   };
 
   return (
-    <div id="title-bar">
-      <img src={voxoraIcon} alt="Voxora Icon" />
-      <div id="app-title">VOXORA</div>
-      <div id="nav-bar-middle">
-        <button className="nav-button">Audio</button>
-        <button className="nav-button">Models</button>
-        <button className="nav-button">Video</button>
+    <header id="title-bar">
+      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <img src={voxoraIcon} alt="Voxora Icon" />
+        <div id="app-title">VOXORA</div>
       </div>
-      <button id="toggler" onClick={handleTogglerOnClick}>
-        {theme === "dark" ? <Sun /> : <Moon />}
-      </button>
-      <button id="download-button">
-        <Download
-          style={{ marginRight: "10px", width: "20px", height: "20px" }}
-        />
-        Download
-      </button>
-    </div>
+
+      <nav id="nav-bar-middle">
+        <button className="nav-button vx-button">Audio</button>
+        <button className="nav-button vx-button">Models</button>
+        <button className="nav-button vx-button">Video</button>
+      </nav>
+
+      <div className="title-bar-actions">
+        <button
+          id="toggler"
+          className="vx-button"
+          onClick={handleTogglerOnClick}
+          aria-label="Toggle theme"
+        >
+          {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
+        <button id="download-button" className="vx-button">
+          <Download size={18} style={{ marginRight: "6px" }} />
+          <span>Download</span>
+        </button>
+      </div>
+    </header>
   );
 }
