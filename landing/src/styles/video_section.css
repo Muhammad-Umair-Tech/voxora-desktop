@@ -173,6 +173,7 @@ video {
 
 .track-bar {
   flex: 1;
+  min-width: 0;
   height: 14px;
   border-radius: 7px;
   border: 2px solid var(--ink);
@@ -287,10 +288,6 @@ video {
   .reveal.reveal-frame {
     transform: none;
   }
-  #video-stage-grid,
-  #video-play-btn::before,
-  #video-play-btn::after,
-  #video-scrubber-fill,
   .track-bar--generated {
     animation: none;
   }
@@ -313,11 +310,6 @@ video {
     font-size: 10.5px;
     padding: 4px 10px;
   }
-
-  #video-play-btn {
-    width: 60px;
-    height: 60px;
-  }
 }
 
 @media (max-width: 480px) {
@@ -330,5 +322,10 @@ video {
   .track-label {
     width: auto;
     text-align: left;
+  }
+
+  .track-bar {
+    width: 100%;
+    align-self: stretch;
   }
 }
