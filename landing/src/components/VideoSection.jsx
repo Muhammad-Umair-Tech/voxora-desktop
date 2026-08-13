@@ -112,7 +112,7 @@ export default function VideoSection() {
             <span className="mock-dot" />
             <div id="video-mock-address">
               <span className="mock-lock">🔒</span>
-              localhost:8000/timeline
+              localhost:8000
             </div>
           </div>
 
