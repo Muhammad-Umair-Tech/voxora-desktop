@@ -72,16 +72,29 @@ def process(
     new_audio = audio.with_start(clamped_start)
 
     # Determine the audio composition model
+    #
+    # IMPORTANT: a clip's `.start` (set via with_start) is only honored when the
+    # clip is rendered *inside* a CompositeAudioClip/CompositeVideoClip. If a
+    # single clip is assigned directly as `video.audio`, MoviePy calls its
+    # get_frame(t) directly and the start offset is silently ignored — this
+    # was why audio always played from the beginning regardless of the chosen
+    # start_time. Wrapping in CompositeAudioClip (even for a single clip)
+    # fixes that.
     if replace_audio:
-        # Completely replace the video's original audio
-        final_audio = new_audio
+        # Completely replace the video's original audio, still respecting the offset
+        final_audio = CompositeAudioClip([new_audio])
     else:
         # Keep the original audio and overlay the newly generated audio over it
         if video.audio is not None:
             final_audio = CompositeAudioClip([video.audio, new_audio])
         else:
             # Fallback if the original video has no audio track
-            final_audio = new_audio
+            final_audio = CompositeAudioClip([new_audio])
+
+    # CompositeAudioClip's duration is the max end time of its sub-clips, which
+    # can end up shorter than the video (e.g. a short replacement track placed
+    # near the end). Clamp/pad so the audio track matches the video's duration.
+    final_audio = final_audio.with_duration(video.duration)
 
     # Apply the final audio track to the video
     final_video = video.with_audio(final_audio)
