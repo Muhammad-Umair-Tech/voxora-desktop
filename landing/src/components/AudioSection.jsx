@@ -11,7 +11,7 @@ const FEATURES = [
   },
   {
     icon: FlaskConical,
-    title: "Test generated the audio",
+    title: "Test the generated audio",
     body: "Quickly play the generated audio within the app.",
   },
   {
