@@ -88,8 +88,17 @@ def generate(
     ]
 
     try:
-        # Pass text via stdin to Piper
-        subprocess.run(cmd, input=text, text=True, capture_output=True, check=True)
+        # Pass text via stdin to Piper.
+        # CREATE_NO_WINDOW prevents Windows from flashing a black console window
+        # when spawning the Piper child process from a windowed (console=False) exe.
+        subprocess.run(
+            cmd,
+            input=text,
+            text=True,
+            capture_output=True,
+            check=True,
+            creationflags=subprocess.CREATE_NO_WINDOW,
+        )
     except subprocess.CalledProcessError as e:
         if output_path.exists():
             output_path.unlink()
