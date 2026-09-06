@@ -1,5 +1,12 @@
 import "../styles/banner_section.css";
-import { Download, Mic2, WifiOff, Package, PlayCircle } from "lucide-react";
+import {
+  Download,
+  Mic2,
+  WifiOff,
+  Package,
+  PlayCircle,
+  TvMinimalPlay,
+} from "lucide-react";
 import GitHubIcon from "./GitHubIcon";
 
 // Hand-tuned amplitude pattern so the waveform reads like real speech
@@ -49,6 +56,15 @@ export default function BannerSection({ onDownloadClicked }) {
             >
               <GitHubIcon size={18} />
               GitHub
+            </a>
+            <a
+              className="cta-secondary vx-button"
+              href="https://streamable.com/3z7wa6"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <TvMinimalPlay size={18} />
+              Watch Demo
             </a>
           </div>
 
